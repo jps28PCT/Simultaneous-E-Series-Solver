@@ -1,2 +1,15 @@
-# Simultaneous-E-Series-Solver
-Solves simultaneous component-relationship equations for E-series values.
+# Simultaneous E-Series Value Solver
+The intention of this application is to allow engineers to automate the process of component value selection in real-world systems.<br/>
+<br/>
+This program solves systems of component-relationship equations for real-world [E-Series](https://wikipedia.org/wiki/E_series_of_preferred_numbers) values. The systems can be fully-determined or under-determined. Every combination of E-Series values is tested based on selected parameters, and the combination with the smallest error is found.
+
+> [!NOTE]
+> Requires Python 3.11 or later and SymPy 1.13.3 or later.<br/>
+> If run without SymPy installed, a warning will be printed and the program will end.
+
+## Running as a Script
+This program is intended to be run as a script.<br/>
+When running as a script, The program will prompt sequentially for each input.<br/>
+<br/>
+First, Component names will be entered. Names must start with a letter, and letters and numbers can follow. Names can be of any length.<br/>
+It is recommended to use standard schematic [component reference designators](https://wikipedia.org/wiki/Reference_designator).
