@@ -68,8 +68,14 @@ def e_val_select(components: str, relationships: list, e_series_selection: list,
     
     for value in decade:
         decade[decade.index(value)] = eng_to_float(str(value))
-    syms = sp.symbols(components)
     symList = components.split(' ')
+    if len(symList) == 0:
+        raise Exception("No Components were passed. Unable to continue.")
+    elif len(symList) == 1:
+        syms = (sp.symbols(components), )
+    else:
+        syms = sp.symbols(components)
+    
     
     equation_list = []
     for relationship in relationships:
@@ -210,7 +216,7 @@ def print_e_val_results(valueDict, seriesDict=None) -> None:
             After printing to the terminal, None.
     """
 
-    print("\033[1;36;40m┌────────────────────┐\n│   R E S U L T S :  │\n└────────────────────┘\033[0m")
+    print("\033[1;36;40m┌───────────────────────────────────────┐\n│            R E S U L T S :            │\n└───────────────────────────────────────┘\033[0m")
     for component in valueDict:
         if component in seriesDict:
             if seriesDict[component] in [3, 6, 12, 24]:
@@ -421,21 +427,16 @@ def eng_to_float(inputStr: str) -> float:
 
 
 
-def save_to_textfile(valueDict, seriesDict=None, relationships=None, header=None) -> str:
+def save_to_textfile(valueDict, seriesDict=None, relationships=None, footer=None) -> str:
     timeInt = int(time())
     humanTime = ctime()
 
     fileName = f"e_series_values_{timeInt}.txt"
     file = open(fileName, 'w', encoding="utf-8")
 
-    file.write(f"\nE - S E R I E S   C O M P O N E N T   V A L U E S\n")
-    file.write("\n\n__________________________________________________\n\n")
-    file.write(f"\nCalculated on {humanTime}\n")
-    if header:
-        file.write(f"{header}\n")
-    file.write("\n\n__________________________________________________\n\n")
+    file.write(f"┌───────────────────────────────────────────┐\n│ E - S E R I E S   C O M P O N E N T   V A L U E S │\n└───────────────────────────────────────────┘\n\n")
 
-    file.write("R E S U L T S :\n\n")
+    file.write("\nR E S U L T S :\n\n")
     for component in valueDict:
         if component in seriesDict:
             if seriesDict[component] in [3, 6, 12, 24]:
@@ -464,7 +465,10 @@ def save_to_textfile(valueDict, seriesDict=None, relationships=None, header=None
             if not relationships.index(relationship) == len(relationships)-1:
                 file.write("\n\n\n\n- - - - - - - - - - - - - - - - - - - - ")
             file.write("\n\n\n")
-    file.write("\n__________________________________________________\nEnd of file.")
+    file.write("\n__________________________________________________\n")
+    file.write(f"\nCalculated on {humanTime}\n")
+    if footer:
+        file.write(f"{footer}\n")
     file.close()
     return fileName
 
@@ -474,100 +478,123 @@ def save_to_textfile(valueDict, seriesDict=None, relationships=None, header=None
 
 
 if __name__ == "__main__":
-    
-    print("\033[2J\033[H\033[1m\033[1;32;40mE-SERIES COMPONENT SOLVER\nDetermine E-series values for components based on mathematical relationships.\033[0m\n")
-    
-    print("\033[1;32;40mPlease enter names of components, one at a time:\n(Press [ENTER] without input when all components have been entered.)\033[0m")
-    comp_str = ""
     while True:
-        try:
-            component = input("\033[2K\033[1;33;40mComponent:  \033[0m")
-            if component == '':
-                break
-            component = str(component)
-            if not component[0].isalpha():
-                raise Exception
-            comp_str = comp_str + " " + component
-        except:
-            print("\033[1;31;40mInvalid input.\033[0m\033[2F")
-    print("\033[1F\033[2K\n")
-    comp_str = comp_str[1:]
-    syms = sp.symbols(comp_str)
-    
-    print("\033[1;32;40mPlease enter mathematical relationships for components, one at a time:\n(Press [ENTER] without input when all relationships have been entered.)\033[0m")
-    relationship_list = []
-    while True:
-        try:
-            relationship = input("\033[2K\033[1;33;40mRelationship: \033[0m")
-            if relationship == '':
-                break
-            else:
-                left, right = relationship.split('=')
-                sp.parse_expr(left)
-                sp.parse_expr(right)
-                relationship_list.append(relationship)
-        except:
-            print("\033[1;31;40mInvalid input.\033[0m\033[2F")
-    print("\033[1F\033[2K\n")
-    
-    print("\033[1;32;40mPlease enter the E-series for each component value:\n(Valid E-series are: 3, 6, 12, 24, 48, 96, 192)\033[0m")
-    e_ser_list = []
-    e_ser_dict = {}
-    for comp in comp_str.split(" "):
-        if comp:
-            while True:
-                try:
-                    e_ser = int(input(f"\033[2K\033[1;33;40mE-Series for {comp}: \033[0m"))
-                    if e_ser not in [3, 6, 12, 24, 48, 96, 192]:
-                        raise Exception
-                    else:
-                        e_ser_list.append(e_ser)
-                        e_ser_dict[comp] = e_ser
+        print("\033[2J\033[H\033[1m\033[1;32;40mE-SERIES COMPONENT SOLVER\nDetermine E-series values for components based on mathematical relationships.\nEnter \033[0m'EXIT'\033[1;32;40m at any time to exit.\n")
+        
+        print("\033[1;32;40mPlease enter names of components, one at a time:\n(Press [ENTER] without input when all components have been entered.\nAt least one component must be entered before continuing.)\033[0m")
+        comp_str = ""
+        while True:
+            try:
+                component = input("\033[2K\033[1;33;40mComponent:  \033[0m")
+                if component.upper() == 'EXIT':
+                    print("\033[0m")
+                    sys.exit("User exit at component entry.")
+                elif component == "":
+                    if comp_str:
                         break
-                except:
-                    print("\033[1;31;40mInvalid input.\033[0m\033[2F")
-    print()
-    print("\033[1;32;40mPlease enter the preferred decade for each component:\n(NOTE: Not all components will fall within preferred decade.)\033[0m")
-    decade_list = []
-    for comp in comp_str.split(" "):
-        if comp:
-            while True:
-                try:
-                    decade = eng_to_float(input(f"\033[2K\033[1;33;40mDecade for {comp}: \033[0m"))
-                    decade_list.append(decade)
-                    break
-                except:
-                    print("\033[1;31;40mInvalid input.\033[0m\033[2F")
-    print("\033[2K\n")
-    print() 
-
-    time1 = int(time())
-    try:
-        values = e_val_select(comp_str, relationship_list, e_ser_list, decade_list)
-    except ValueError as error:
-        print(f"\033[1;31;40m{error}\033[0m")
-        input()
-        sys.exit(1)
-    time2 = int(time())
-    elapsed = time2 - time1
-    if elapsed == 0:
-        elapsed = "less than one"
-
-    print_e_val_results(values, e_ser_dict)
-
-    if elapsed > 1:
-        computed_time = f"\nComputed in {elapsed} seconds."
-    else:
-        computed_time = f"\nComputed in {elapsed} second."
-
-    print(f"\n{computed_time}")
-
-    while True:
-        print("\n\n\033[1;33;40m[Enter [S] to save to textfile, otherwise press [ENTER] to quit.]\033[0m")
-        option = input()
-        if option.upper() == "S":
-            name = save_to_textfile(values, e_ser_dict, relationship_list, header=computed_time)
-            print(f"\033[2F\033[2K\033[1;33;40m[Press [ENTER] to quit.]\n\033[2KSaved to \033[0m{name}\033[0m")
+                    else:
+                        raise Exception
+                component = str(component)
+                if not component[0].isalpha():
+                    raise Exception
+                comp_str = comp_str + " " + component
+            except Exception:
+                print("\033[1;31;40mInvalid input.\033[0m\033[2F")
+        print("\033[1F\033[2K\n")
+        comp_str = comp_str[1:]
+        syms = sp.symbols(comp_str)
+        
+        print("\033[1;32;40mPlease enter mathematical relationships for components, one at a time:\n(Press [ENTER] without input when all relationships have been entered.\nAt least one relationship must be entered before continuing.)\033[0m")
+        relationship_list = []
+        while True:
+            try:
+                relationship = input("\033[2K\033[1;33;40mRelationship: \033[0m")
+                if relationship.upper() == 'EXIT':
+                    print("\033[0m")
+                    sys.exit("User exit at relationship entry.")
+                elif relationship == '':
+                    if relationship_list:
+                        break
+                    else:
+                        raise Exception
+                else:
+                    left, right = relationship.split('=')
+                    sp.parse_expr(left)
+                    sp.parse_expr(right)
+                    relationship_list.append(relationship)
+            except Exception:
+                print("\033[1;31;40mInvalid input.\033[0m\033[2F")
+        print("\033[1F\033[2K\n")
+        
+        print("\033[1;32;40mPlease enter the E-series for each component value:\n(Valid E-series are: 3, 6, 12, 24, 48, 96, 192)\033[0m")
+        e_ser_list = []
+        e_ser_dict = {}
+        for comp in comp_str.split(" "):
+            if comp:
+                while True:
+                    try:
+                        e_ser = input(f"\033[2K\033[1;33;40mE-Series for {comp}: \033[0m")
+                        if e_ser.upper() == 'EXIT':
+                            print("\033[0m")
+                            sys.exit("User exit at E-series selection.")
+                        e_ser = int(e_ser)
+                        if e_ser not in [3, 6, 12, 24, 48, 96, 192]:
+                            raise Exception
+                        else:
+                            e_ser_list.append(e_ser)
+                            e_ser_dict[comp] = e_ser
+                            break
+                    except Exception:
+                        print("\033[1;31;40mInvalid input.\033[0m\033[2F")
+        print()
+        print("\033[1F\033[2K\n")
+        
+        print("\033[1;32;40mPlease enter the preferred decade for each component:\n(Must be entered as a power of 10, and engineering notation can be used.\nNOTE: Not all components will fall within preferred decade.)\033[0m")
+        decade_list = []
+        for comp in comp_str.split(" "):
+            if comp:
+                while True:
+                    try:
+                        decade = input(f"\033[2K\033[1;33;40mDecade for {comp}: \033[0m")
+                        if decade.upper() == 'EXIT':
+                            print("\033[0m")
+                            sys.exit("User exit at decade entry.")
+                        decade = eng_to_float(decade)
+                        decade_list.append(decade)
+                        break
+                    except Exception:
+                        print("\033[1;31;40mInvalid input.\033[0m\033[2F")
+        print("\033[2K\n")
+        print() 
+    
+        time1 = int(time())
+        try:
+            values = e_val_select(comp_str, relationship_list, e_ser_list, decade_list)
+        except ValueError as error:
+            print(f"\033[1;31;40m{error}\033[0m")
             input()
-        print("\033[0m")
-        sys.exit(0)
+            sys.exit(1)
+        time2 = int(time())
+        elapsed = round(time2 - time1, 3)
+        if elapsed == 1.0:
+            computed_time = f"{elapsed} second."
+        elif elapsed < 0.001:
+            computed_time = "less than one millisecond."
+        else:
+            computed_time = f"{elapsed} seconds."
+        print(f"\n\nComputed in {computed_time}\n\n")
+        
+        print_e_val_results(values, e_ser_dict)
+
+        print("\n\n\n\n")
+        while True:
+            print("\033[2F\033[2K\033[1;33;40m[Enter [S] to save to textfile or [R] to re-run with new values, otherwise press [ENTER] to quit.]\033[0m\033[1E")
+            option = input("\033[2K").upper()
+            if option == 'S':
+                name = save_to_textfile(values, e_ser_dict, relationship_list, footer=f"Computed in {computed_time}")
+                print(f"\033[2F\033[2K\033[1;33;40mSaved to \033[0m{name}")
+            elif option == 'R':
+                break
+            elif option == '':
+                print("\033[0m")
+                sys.exit("User exit at completion.")
