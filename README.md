@@ -11,5 +11,7 @@ This program solves systems of component-relationship equations for real-world [
 This program is intended to be run as a script.<br/>
 When running as a script, The program will prompt sequentially for each input.<br/>
 <br/>
-First, Component names will be entered. Names must start with a letter, and letters and numbers can follow. Names can be of any length.<br/>
-It is recommended to use standard schematic [component reference designators](https://wikipedia.org/wiki/Reference_designator).
+First, component names will be entered. Names must start with a letter, and letters and numbers can follow. Names can be of any length.<br/>
+It is recommended to use standard schematic [component reference designators](https://wikipedia.org/wiki/Reference_designator).<br/>
+<br/>
+Next, component relationship equations are entered. These equations should be based on the topology of the circuit, and should reflect the desired effect for the circuit. They can be based on standard circuit equations for known topologies, such as voltage or current dividers and filters, or they can be found analytically through mesh/nodal circuit analysis.
