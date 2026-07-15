@@ -13,8 +13,11 @@ When running as a script, The program will prompt sequentially for each input.<b
 <br/>
 First, component names will be entered. Names must start with a letter, and letters and numbers can follow. Names can be of any length.<br/>
 It is recommended to use standard schematic [component reference designators](https://wikipedia.org/wiki/Reference_designator).<br/>
+When finished entering components, press `[ENTER]` on the empty input line.<br/>
 <br/>
-Next, component relationship equations are entered. These equations should be based on the topology of the circuit, and should reflect the desired effect for the circuit. They can be based on standard circuit equations for known topologies, or they can be found analytically through mesh/nodal circuit analysis. Use standard Python and SymPy algebraic operators. All equations must include an equals sign (`=`).
+
+Next, component relationship equations are entered. These equations should be based on the topology of the circuit, and should reflect the desired effect for the circuit. They can be based on standard circuit equations for known topologies, or they can be found analytically through mesh/nodal circuit analysis. Use standard Python and SymPy algebraic operators. All equations must include an equals sign (`=`).<br/>
+When finished entering component relationships, press `[ENTER]` on the empty input line.
 
 ### Valid Operators
 | Operator | Example | Use |
@@ -26,3 +29,6 @@ Next, component relationship equations are entered. These equations should be ba
 | `**` | `A**B` | exponentiation |
 | `sqrt( )` | `sqrt(A)` | square root |
 | `**(1/n)` | `A**(1/B)` | n-th root |
+<br/>
+
+Next, component E-series are selected. The program will prompt once for every component name entered, and the desired E-Series can be entered. Only enter the number of the series. The program will proceed once every component has been associated with an E-Series.
