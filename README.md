@@ -17,11 +17,12 @@ It is recommended to use standard schematic [component reference designators](ht
 Next, component relationship equations are entered. These equations should be based on the topology of the circuit, and should reflect the desired effect for the circuit. They can be based on standard circuit equations for known topologies, or they can be found analytically through mesh/nodal circuit analysis. Use standard Python and SymPy algebraic operators. All equations must include an equals sign (`=`).
 
 ### Valid Operators
-| Operator | Use |
-| :---: | :---: |
-| `+` | addition |
-| `-` | subtraction |
-| `*` | multiplication |
-| `/` | division |
-| `**` | exponentiation |
-| `**(1/n)` | nth root |
+| Operator | Example | Use |
+| :---: | :---: | :---: |
+| `+` | `A+B` | addition |
+| `-` | `A-B` | subtraction |
+| `*` | `A*B` | multiplication |
+| `/` | `A/B` | division |
+| `**` | `A**B` | exponentiation |
+| `sqrt( )` | `sqrt(A)` | square root |
+| `**(1/n)` | `A**(1/B)` | n-th root |
