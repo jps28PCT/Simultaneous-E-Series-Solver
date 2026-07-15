@@ -14,4 +14,14 @@ When running as a script, The program will prompt sequentially for each input.<b
 First, component names will be entered. Names must start with a letter, and letters and numbers can follow. Names can be of any length.<br/>
 It is recommended to use standard schematic [component reference designators](https://wikipedia.org/wiki/Reference_designator).<br/>
 <br/>
-Next, component relationship equations are entered. These equations should be based on the topology of the circuit, and should reflect the desired effect for the circuit. They can be based on standard circuit equations for known topologies, or they can be found analytically through mesh/nodal circuit analysis. Use standard [Python](https://docs.python.org/3/reference/expressions.html) algebraic operators. All equations must include an equals sign (`=`).
+Next, component relationship equations are entered. These equations should be based on the topology of the circuit, and should reflect the desired effect for the circuit. They can be based on standard circuit equations for known topologies, or they can be found analytically through mesh/nodal circuit analysis. Use standard Python and SymPy algebraic operators. All equations must include an equals sign (`=`).
+
+### Valid Operators
+| Operator | Use |
+| :---: | :---: |
+| `+` | addition |
+| `-` | subtraction |
+| `*` | multiplication |
+| `/` | division |
+| `**` | exponentiation |
+| `**(1/n)` | nth root |
