@@ -31,4 +31,4 @@ When finished entering component relationships, press `[ENTER]` on the empty inp
 | `**(1/n)` | `A**(1/B)` | n-th root |
 <br/>
 
-Next, component E-series are selected. The program will prompt once for every component name entered, and the desired E-Series can be entered. Only enter the number of the series. The program will proceed once every component has been associated with an E-Series.
+Next, E-series are selected for each entered component. Only the number of the series should be entered. The program will proceed once every component has been associated with an E-Series.
