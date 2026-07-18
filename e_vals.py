@@ -24,6 +24,9 @@ except ModuleNotFoundError:
     input()
     sys.exit(1)
 
+
+#################################   CALLABLE FUNCTIONS   #################################
+
     
 
 def e_val_select(components: str, relationships: list, e_series_selection: list, decade: list) -> dict:
@@ -531,8 +534,157 @@ def save_to_textfile(valueDict, seriesDict=None, relationships=None, footer=None
 
 
 
+#################################   VALUE CHECKING   #################################
+"""
+These functions can be used to check the validity of an input value before it is formatted
+for input into e_val_select().
+
+The solving engine does not call these functions. They can be called to validate user input
+before calling e_val_select().
+"""
+
+class InvalidValueError(Exception):
+    """
+    Exception for when component_check, relationship_check, e_series_selection_check, and decade_check fail.
+    This ensures that these cases can be handled seperately from other exceptions, to improve clarity.    
+    """
+
+def component_check(component: str, type="exception") -> str:
+    """
+    This function checks if a component name follows form expected for SymPy.
+    A component name must start with a letter, and can only contain letters, numbers, and underscores.
+
+    Args:
+        component (str):    Component name to check
+        type (str):         Output type.
+                            type="exception": Raises InvalidValueError exception with descriptive error message.
+                            type="str":       Only returns string, and does not raise exceptions.
+                            Default: "exception"
+    
+    Returns:
+        If type="str", will return text with descriptive error message if the component name is invalid.
+        If the component name is valid, an empty string will be returned.
+        If an invalid string is entered for "type", then the str "NONE SELECTED" will return.
+    """
+    errorStr = ""
+    if not component[0].isalpha():
+        errorStr = "First character is not a letter."
+    elif not component.isidentifier():
+        errorStr = "Contains characters other than letters, numbers, or underscore."
+    
+    match type.lower():
+        case "exception":
+            if errorStr:
+                raise InvalidValueError(errorStr)
+        case "str":
+            return errorStr
+        case _:
+            return "NONE SELECTED"
+
+def relationship_check(relationship: str, type="exception") -> str:
+    """
+    This function checks if a relationship equation follows form expected by the e_val_select() engine.
+    It will not check for all possible SymPy syntax issues, but rather guards against common syntax mistakes.
+
+    Args:
+        relationship (str): Relationship equation to check
+        type (str):         Output type.
+                            type="exception": Raises InvalidValueError exception with descriptive error message.
+                            type="str":       Only returns string, and does not raise exceptions.
+                            Default: "exception"
+    
+    Returns:
+        If type="str", will return text with descriptive error message if the relationship is invalid.
+        If the component name is valid, an empty string will be returned.
+        If an invalid string is entered for "type", then the str "NONE SELECTED" will return.
+    """
+    errorStr = ""
+    if not '=' in relationship:
+        errorStr = "Relationship equation must contain an equals sign."
+    if '^' in relationship:
+        errorStr = "Caret cannot be used for exponentiation. Use two asterisks (A**B)."
+    
+    match type.lower():
+        case "exception":
+            if errorStr:
+                raise InvalidValueError(errorStr)
+        case "str":
+            return errorStr
+        case _:
+            return "NONE SELECTED"
+        
+
+def e_series_selection_check(e_series_selection: int, type="exception") -> str:
+    """
+    This function checks if an integer is a valid E-Series number.
+
+    Args:
+        e_series_selection (int):   E-Series number to check
+        type (str):                 Output type.
+                                    type="exception": Raises InvalidValueError exception with descriptive error message.
+                                    type="str":       Only returns string, and does not raise exceptions.
+                                    Default: "exception"
+    
+    Returns:
+        If type="str", will return text with descriptive error message if the E-Series value is invalid.
+        If the component name is valid, an empty string will be returned.
+        If an invalid string is entered for "type", then the str "NONE SELECTED" will return.
+    """
+    errorStr = ""
+    if e_series_selection not in [3, 6, 12, 24, 48, 96, 192]:
+        errorStr = "Value must be a valid E-Series number."
+    
+    match type.lower():
+        case "exception":
+            if errorStr:
+                raise InvalidValueError(errorStr)
+        case "str":
+            return errorStr
+        case _:
+            return "NONE SELECTED"
+
+def decade_check(decade: float, type="exception") -> str:
+    """
+    This function checks if a float is a valid power-of-ten decade.
+
+    Args:
+        decade (float): Value to check.
+        type (str):     Output type.
+                        type="exception": Raises InvalidValueError exception with descriptive error message.
+                        type="str":       Only returns string, and does not raise exceptions.
+                        Default: "exception"
+    
+    Returns:
+        If type="str", will return text with descriptive error message if the decade is invalid.
+        If the component name is valid, an empty string will be returned.
+        If an invalid string is entered for "type", then the str "NONE SELECTED" will return.
+    """
+    errorStr = ""
+    if not log10(decade).is_integer():
+        errorStr = "Value must be a decade expressed a power of 10."
+    
+    match type.lower():
+        case "exception":
+            if errorStr:
+                raise InvalidValueError(errorStr)
+        case "str":
+            return errorStr
+        case _:
+            return "NONE SELECTED"
+
+
+
+
+
+#################################   PROGRAM SCRIPT   #################################
+"""
+This part only runs if the program is run as a script.
+
+No part of this section is callable from another file.
+"""
 
 if __name__ == "__main__":
+
     while True: ##### MAIN PROGRAM LOOP
         print("\033[2J\033[H\033[1m\033[1;32;40mE-SERIES COMPONENT SOLVER\n\
               Determine E-series values for components based on mathematical relationships.\n\
@@ -555,9 +707,10 @@ if __name__ == "__main__":
                     else:
                         raise Exception
                 component = str(component)
-                if not component[0].isalpha():
-                    raise Exception
+                component_check(component, type="exception")
                 comp_str = comp_str + " " + component
+            except InvalidValueError as err:
+                print(f"\033[1;31;40m{err}\033[0m\033[2F")
             except Exception:
                 print("\033[1;31;40mInvalid input.\033[0m\033[2F")
         print("\033[1F\033[2K\n")
@@ -580,10 +733,13 @@ if __name__ == "__main__":
                     else:
                         raise Exception
                 else:
+                    relationship_check(relationship, type="exception")
                     left, right = relationship.split('=')
                     sp.parse_expr(left)
                     sp.parse_expr(right)
                     relationship_list.append(relationship)
+            except InvalidValueError as err:
+                print(f"\033[1;31;40m{err}\033[0m\033[2F")
             except Exception:
                 print("\033[1;31;40mInvalid input.\033[0m\033[2F")
         print("\033[1F\033[2K\n")
@@ -602,12 +758,12 @@ if __name__ == "__main__":
                             print("\033[0m")
                             sys.exit("User exit at E-series selection.")
                         e_ser = int(e_ser)
-                        if e_ser not in [3, 6, 12, 24, 48, 96, 192]:
-                            raise Exception
-                        else:
-                            e_ser_list.append(e_ser)
-                            e_ser_dict[comp] = e_ser
-                            break
+                        e_series_selection_check(e_ser, type="exception")
+                        e_ser_list.append(e_ser)
+                        e_ser_dict[comp] = e_ser
+                        break
+                    except InvalidValueError as err:
+                        print(f"\033[1;31;40m{err}\033[0m\033[2F")
                     except Exception:
                         print("\033[1;31;40mInvalid input.\033[0m\033[2F")
         print()
@@ -626,11 +782,10 @@ if __name__ == "__main__":
                             print("\033[0m")
                             sys.exit("User exit at decade entry.")
                         decade = eng_to_float(decade)
-                        if log10(decade).is_integer():  #Checks if decade is power of 10
-                            decade_list.append(decade)
-                        else:
-                            raise Exception
+                        decade_check(decade, type="exception")
                         break
+                    except InvalidValueError as err:
+                        print(f"\033[1;31;40m{err}\033[0m\033[2F")
                     except Exception:
                         print("\033[1;31;40mInvalid input.\033[0m\033[2F")
         print("\033[2K\n")
@@ -641,7 +796,7 @@ if __name__ == "__main__":
             values = e_val_select(comp_str, relationship_list, e_ser_list, decade_list)
         except ValueError as error:
             print(f"\033[1;31;40m{error}\033[0m")
-            input()
+            input("Press [ENTER] to quit.\n")
             sys.exit(1)
         time2 = time()
         elapsed = round(time2 - time1, 3)
