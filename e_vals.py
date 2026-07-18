@@ -265,9 +265,9 @@ def print_e_val_results(valueDict: dict, seriesDict: dict=None) -> None:
             After printing to the terminal, None.
     """
 
-    print("\033[1;36;40m┌───────────────────────────────────────┐\033[0m")
-    print("\033[1;36;40m│            R E S U L T S :            │\033[0m")
-    print("\033[1;36;40m└───────────────────────────────────────┘\033[0m")
+    print("\033[1;36;40m┌───────────────────────────────────────┐\033[0m\n"
+          "\033[1;36;40m│            R E S U L T S :            │\033[0m\n"
+          "\033[1;36;40m└───────────────────────────────────────┘\033[0m")
 
     for component in valueDict:
         if seriesDict and component in seriesDict:
@@ -277,8 +277,8 @@ def print_e_val_results(valueDict: dict, seriesDict: dict=None) -> None:
                 sigfigs = 3
         else:
             sigfigs = 3
-        print(f"\033[1;33;40m{component}:\033[0m {eng_note(valueDict[component][0], sigfigs)} \
-              \t\t\033[1;36;40mError:\033[0m {valueDict[component][1]*100:.3f}%")
+        print(f"\033[1;33;40m{component}:\033[0m {eng_note(valueDict[component][0], sigfigs)}"
+              f"\t\t\033[1;36;40mError:\033[0m {valueDict[component][1]*100:.3f}%")
 
     return None
     
@@ -474,8 +474,8 @@ def eng_to_float(inputStr: str) -> float:
         case 'y':
             exponent = -24
         case _:
-            raise ValueError(f"'{prefixStr}' is an invalid engineering notation prefix. \
-                             Prefix must be between 10^-24 (y-) and 10^24 (Y-).")
+            raise ValueError(f"'{prefixStr}' is an invalid engineering notation prefix. "
+                             "Prefix must be between 10^-24 (y-) and 10^24 (Y-).")
         
     returnNum = float(numStr) * 10**exponent
     return returnNum
@@ -502,9 +502,9 @@ def save_to_textfile(valueDict, seriesDict: dict=None, relationships: list=None,
     fileName = f"e_series_values_{timeInt}.txt"
     file = open(fileName, 'w', encoding="utf-8")
 
-    file.write(f"┌───────────────────────────────────────────────────┐\n")
-    file.write(f"│ E - S E R I E S   C O M P O N E N T   V A L U E S │\n")
-    file.write(f"└───────────────────────────────────────────────────┘\n\n")
+    file.write("┌───────────────────────────────────────────────────┐\n"
+               "│ E - S E R I E S   C O M P O N E N T   V A L U E S │\n"
+               "└───────────────────────────────────────────────────┘\n\n")
 
     if header:
         file.write(f"\n{header}\n\n")
