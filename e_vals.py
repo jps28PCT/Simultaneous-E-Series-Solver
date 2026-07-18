@@ -121,17 +121,45 @@ def e_val_select(components: str, relationships: list, e_series_selection: list,
     if len(symList) == 0:
         raise Exception("No Components were passed. Unable to continue.")
     elif len(symList) == 1:
-        syms = (sp.symbols(components), )
+        syms = (sp.symbols(components), )   #Formatting as tuple with one element
     else:
         syms = sp.symbols(components)
     
+    constants = {
+        ###CONSTANTS
+        sp.Symbol('pi'):        3.14159265358979323846264338327950,
+        sp.Symbol('e'):         2.71828182845904523536028747135266,
+        sp.Symbol('phi'):       1.61803398874989484820458683436563,
+        sp.Symbol('sqrt_2', 
+        pretty_name='\u221A2'): 1.41421356237309504880168872420969,
+        sp.Symbol('sqrt_3', 
+        pretty_name='\u221A3'): 1.73205080756887729352744634150587,
+        
+        ### ENGINEERING NOTATION
+        sp.Symbol('Y'):        1e24,
+        sp.Symbol('Z'):        1e21,
+        sp.Symbol('E'):        1e18,
+        sp.Symbol('P'):        1e15,
+        sp.Symbol('T'):        1e12,
+        sp.Symbol('G'):        1e9,
+        sp.Symbol('M'):        1e6,
+        sp.Symbol('k'):        1e3,
+        sp.Symbol('m'):        1e-3,
+        sp.Symbol('u',
+        preety_name='\u03BC'): 1e-6,
+        sp.Symbol('n'):        1e-9,
+        sp.Symbol('p'):        1e-12,
+        sp.Symbol('f'):        1e-15,
+        sp.Symbol('a'):        1e-18,
+        sp.Symbol('z'):        1e-21,
+        sp.Symbol('y'):        1e-24}
     
     equation_list = []
     for relationship in relationships:
         left, right = relationship.split('=')
         
-        relat_ex = sp.parse_expr(right)
-        relat_eq = sp.parse_expr(left)
+        relat_ex = sp.parse_expr(right).subs(constants)
+        relat_eq = sp.parse_expr(left).subs(constants)
         equation = sp.Eq(relat_ex, relat_eq)
         
         equation_list.append(equation)
@@ -608,6 +636,9 @@ def component_check(component: str, out: str="exception") -> str:
         errorStr = "First character is not a letter."
     elif not component.isidentifier():
         errorStr = "Contains characters other than letters, numbers, or underscore."
+    elif component in ['pi','e','sqrt_2','sqrt_3','Y', 'Z', 'E', 'P', 'T', 
+                       'G', 'M', 'k', 'm', 'u', 'n', 'p', 'f', 'a', 'z', 'y' ]:
+        errorStr = "Component name cannot be reserved keyword."
     
     match out.lower():
         case "exception":
@@ -723,13 +754,13 @@ No part of this section is callable from another file.
 if __name__ == "__main__":
 
     while True: ##### MAIN PROGRAM LOOP
-        print("\033[2J\033[H\033[1m\033[1;32;40mE-SERIES COMPONENT SOLVER\n\
-              Determine E-series values for components based on mathematical relationships.\n\
-              Enter \033[0m'EXIT'\033[1;32;40m at any time to exit.\n")
+        print("\033[2J\033[H\033[1m\033[1;32;40mE-SERIES COMPONENT SOLVER\n"
+              "Determine E-series values for components based on mathematical relationships.\n"
+              "Enter \033[0m'EXIT'\033[1;32;40m at any time to exit.\n")
         
-        print("\033[1;32;40mPlease enter names of components, one at a time:\n\
-              (Press [ENTER] without input when all components have been entered.\n\
-              At least one component must be entered before continuing.)\033[0m")
+        print("\033[1;32;40mPlease enter names of components, one at a time:\n"
+              "(Press [ENTER] without input when all components have been entered.\n"
+              "At least one component must be entered before continuing.)\033[0m")
         
         comp_str = ""
         while True: ### Component name entry
@@ -753,9 +784,9 @@ if __name__ == "__main__":
         print("\033[1F\033[2K\n")
         comp_str = comp_str[1:]
         
-        print("\033[1;32;40mPlease enter mathematical relationships for components, one at a time:\n\
-              (Press [ENTER] without input when all relationships have been entered.\n\
-              At least one relationship must be entered before continuing.)\033[0m")
+        print("\033[1;32;40mPlease enter mathematical relationships for components, one at a time:\n"
+              "(Press [ENTER] without input when all relationships have been entered.\n"
+              "At least one relationship must be entered before continuing.)\033[0m")
         
         relationship_list = []
         while True: ### Relationship equation entry
@@ -781,8 +812,8 @@ if __name__ == "__main__":
                 print("\033[1;31;40mInvalid input.\033[0m\033[2F")
         print("\033[1F\033[2K\n")
         
-        print("\033[1;32;40mPlease enter the E-series for each component value:\n\
-              (Valid E-series are: 3, 6, 12, 24, 48, 96, 192)\033[0m")
+        print("\033[1;32;40mPlease enter the E-series for each component value:\n"
+              "(Valid E-series are: 3, 6, 12, 24, 48, 96, 192)\033[0m")
         
         e_ser_list = []
         e_ser_dict = {}
@@ -806,9 +837,9 @@ if __name__ == "__main__":
         print()
         print("\033[1F\033[2K\n")
         
-        print("\033[1;32;40mPlease enter the preferred decade for each component:\n\
-              (Must be entered as a power of 10, and engineering notation can be used.\n\
-              NOTE: Not all components will fall within preferred decade.)\033[0m")
+        print("\033[1;32;40mPlease enter the preferred decade for each component:\n"
+              "(Must be entered as a power of 10, and engineering notation can be used.\n"
+              "NOTE: Not all components will fall within preferred decade.)\033[0m")
         decade_list = []
         for comp in comp_str.split(" "):    ### Decade selection, per component
             if comp:
@@ -860,5 +891,5 @@ if __name__ == "__main__":
             elif option == 'R':
                 break
             elif option == '':
-                print("\033[0m")
+                print("\033[0m\n\n")
                 sys.exit("User exit at completion.")
