@@ -277,24 +277,28 @@ def print_e_val_results(valueDict: dict, seriesDict: dict=None) -> None:
                 sigfigs = 3
         else:
             sigfigs = 3
-        print(f"\033[1;33;40m{component}:\033[0m {eng_note(valueDict[component][0], sigfigs)}"
+        print(f"\033[1;33;40m{component}:\033[0m {eng_note(valueDict[component][0], sigfigs, encoding=sys.getdefaultencoding())}"
               f"\t\t\033[1;36;40mError:\033[0m {valueDict[component][1]*100:.3f}%")
 
     return None
     
         
 
-def eng_note(inputValue: float, numSigFigs: int=0) -> str:
+def eng_note(inputValue: float, numSigFigs: int=0, encoding: str="ASCII") -> str:
     """
     Formats a numeric value as a string in engineering notation.
     Works from -10^24 to 10^24, otherwise defaults to scientific notation.
     Using the same number of significant figures results in a consistent string length.
 
     Args:
-        inputValue: numeric value to be formatted.
-        numSigFigs: Number of significant figures. 
-                    Inputting zero results in maximum length.
-                    Defaults to zero.
+        inputValue (float): numeric value to be formatted.
+        numSigFigs (int):   Number of significant figures. 
+                            Inputting zero results in maximum length.
+                            Defaults to zero.
+        encoding (str):     Selects encoding style for "micro" designation.
+                            encoding="ASCII": "micro" is written as "u"
+                            encoding="UFT-8": "micro" is written as "µ"
+                            Default: "ASCII"
     Returns:
         String formatted in engineering notation.
     """
@@ -303,9 +307,15 @@ def eng_note(inputValue: float, numSigFigs: int=0) -> str:
     if newVal == 0:
         return f"{'0  ':>{numSigFigs+1}}"
     elif newVal == float('inf'):
-        return f"{'inf  ':>{numSigFigs+1}}"
+        if encoding.upper() == "UTF-8":
+            return f"{'\u221E  ':>{numSigFigs+1}}"
+        else:
+            return f"{'inf  ':>{numSigFigs+1}}"
     elif newVal == float('-inf'):
-        return f"{'-inf  ':>{numSigFigs+1}}"
+        if encoding.upper() == "UTF-8":
+            return f"{'-\u221E  ':>{numSigFigs+1}}"
+        else:   
+            return f"{'-inf  ':>{numSigFigs+1}}"
     
     while (abs(newVal) >= 1000) and exponent <= 24:
         exponent += 3
@@ -386,7 +396,10 @@ def eng_note(inputValue: float, numSigFigs: int=0) -> str:
         case -3:
             returnVal += ' m'
         case -6:
-            returnVal += ' u'
+            if encoding.upper() == "UTF-8":
+                returnVal += " \u03BC"
+            else:
+                returnVal += ' u'
         case -9:
             returnVal += ' n'
         case -12:
@@ -433,10 +446,15 @@ def eng_to_float(inputStr: str) -> float:
     numStr = ""
     prefixStr = ""
     for char in inputStr:
-        if char.isdigit() or char == '.' or char == '-':
+        if char.isdigit() or char in['.', '-', '\u221E']:
             numStr += char
         if char.isalpha():
             prefixStr += char
+    
+    if numStr == "\u221E":
+        return float('inf')
+    elif numStr == "-\u221E":
+        return float('-inf')
     
     match prefixStr:
         case 'Y':
@@ -460,6 +478,8 @@ def eng_to_float(inputStr: str) -> float:
         case 'm':
             exponent = -3
         case 'u':
+            exponent = -6
+        case '\u03BC':
             exponent = -6
         case 'n':
             exponent = -9
@@ -485,6 +505,7 @@ def eng_to_float(inputStr: str) -> float:
 def save_to_textfile(valueDict, seriesDict: dict=None, relationships: list=None, header: str=None, footer: str=None) -> str:
     """
     Writes results of e_val_select() to a text file. Name of text file is generated based on UNIX timestamp.
+    Encoding will always be in UTF-8.
 
     Args:
         valueDict (dict):       Returned dictionary from e_val_select()
@@ -518,7 +539,7 @@ def save_to_textfile(valueDict, seriesDict: dict=None, relationships: list=None,
                 sigfigs = 3
         else:
             sigfigs = 3
-        file.write(f"{component}: {eng_note(valueDict[component][0], sigfigs)}\t\t\
+        file.write(f"{component}: {eng_note(valueDict[component][0], sigfigs, encoding="UTF-8")}\t\t\
                    Error: {valueDict[component][1]*100:.3f}%\n")
 
     if seriesDict:
