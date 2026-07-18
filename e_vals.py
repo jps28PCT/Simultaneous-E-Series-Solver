@@ -251,7 +251,7 @@ def e_val_select(components: str, relationships: list, e_series_selection: list,
 
 
 
-def print_e_val_results(valueDict: dict, seriesDict={}) -> None:
+def print_e_val_results(valueDict: dict, seriesDict: dict=None) -> None:
     """
     Prints the results of e_val_select() to terminal for display.
 
@@ -284,7 +284,7 @@ def print_e_val_results(valueDict: dict, seriesDict={}) -> None:
     
         
 
-def eng_note(inputValue, numSigFigs=0) -> str:
+def eng_note(inputValue: float, numSigFigs: int=0) -> str:
     """
     Formats a numeric value as a string in engineering notation.
     Works from -10^24 to 10^24, otherwise defaults to scientific notation.
@@ -482,7 +482,7 @@ def eng_to_float(inputStr: str) -> float:
 
 
 
-def save_to_textfile(valueDict, seriesDict={}, relationships=[], header="", footer="") -> str:
+def save_to_textfile(valueDict, seriesDict: dict=None, relationships: list=None, header: str=None, footer: str=None) -> str:
     """
     Writes results of e_val_select() to a text file. Name of text file is generated based on UNIX timestamp.
 
@@ -565,22 +565,22 @@ class InvalidValueError(Exception):
     This ensures that these cases can be handled seperately from other exceptions, to improve clarity.    
     """
 
-def component_check(component: str, type="exception") -> str:
+def component_check(component: str, out: str="exception") -> str:
     """
     Checks if a component name follows form expected for SymPy.
     A component name must start with a letter, and can only contain letters, numbers, and underscores.
 
     Args:
         component (str):    Component name to check
-        type (str):         Output type.
-                            type="exception": Raises InvalidValueError exception with descriptive error message.
-                            type="str":       Only returns string, and does not raise exceptions.
+        out (str):         Output out.
+                            out="exception": Raises InvalidValueError exception with descriptive error message.
+                            out="str":       Only returns string, and does not raise exceptions.
                             Default: "exception"
     
     Returns:
-        If type="str", will return text with descriptive error message if the component name is invalid.
+        If out="str", will return text with descriptive error message if the component name is invalid.
         If the component name is valid, an empty string will be returned.
-        If an invalid string is entered for "type", then the str "NONE SELECTED" will return.
+        If an invalid string is entered for "out", then the str "NONE SELECTED" will return.
     """
     errorStr = ""
     if not component[0].isalpha():
@@ -588,7 +588,7 @@ def component_check(component: str, type="exception") -> str:
     elif not component.isidentifier():
         errorStr = "Contains characters other than letters, numbers, or underscore."
     
-    match type.lower():
+    match out.lower():
         case "exception":
             if errorStr:
                 raise InvalidValueError(errorStr)
@@ -597,22 +597,22 @@ def component_check(component: str, type="exception") -> str:
         case _:
             return "NONE SELECTED"
 
-def relationship_check(relationship: str, type="exception") -> str:
+def relationship_check(relationship: str, out: str="exception") -> str:
     """
     Checks if a relationship equation follows form expected by the e_val_select() engine.
     It will not check for all possible SymPy syntax issues, but rather guards against common syntax mistakes.
 
     Args:
         relationship (str): Relationship equation to check
-        type (str):         Output type.
-                            type="exception": Raises InvalidValueError exception with descriptive error message.
-                            type="str":       Only returns string, and does not raise exceptions.
+        out (str):         Output out.
+                            out="exception": Raises InvalidValueError exception with descriptive error message.
+                            out="str":       Only returns string, and does not raise exceptions.
                             Default: "exception"
     
     Returns:
-        If type="str", will return text with descriptive error message if the relationship is invalid.
+        If out="str", will return text with descriptive error message if the relationship is invalid.
         If the component name is valid, an empty string will be returned.
-        If an invalid string is entered for "type", then the str "NONE SELECTED" will return.
+        If an invalid string is entered for "out", then the str "NONE SELECTED" will return.
     """
     errorStr = ""
     if not '=' in relationship:
@@ -620,7 +620,7 @@ def relationship_check(relationship: str, type="exception") -> str:
     if '^' in relationship:
         errorStr = "Caret cannot be used for exponentiation. Use two asterisks (A**B)."
     
-    match type.lower():
+    match out.lower():
         case "exception":
             if errorStr:
                 raise InvalidValueError(errorStr)
@@ -630,27 +630,27 @@ def relationship_check(relationship: str, type="exception") -> str:
             return "NONE SELECTED"
         
 
-def e_series_selection_check(e_series_selection: int, type="exception") -> str:
+def e_series_selection_check(e_series_selection: int, out: str="exception") -> str:
     """
     Checks if an integer is a valid E-Series number.
 
     Args:
         e_series_selection (int):   E-Series number to check
-        type (str):                 Output type.
-                                    type="exception": Raises InvalidValueError exception with descriptive error message.
-                                    type="str":       Only returns string, and does not raise exceptions.
+        out (str):                 Output out.
+                                    out="exception": Raises InvalidValueError exception with descriptive error message.
+                                    out="str":       Only returns string, and does not raise exceptions.
                                     Default: "exception"
     
     Returns:
-        If type="str", will return text with descriptive error message if the E-Series value is invalid.
+        If out="str", will return text with descriptive error message if the E-Series value is invalid.
         If the component name is valid, an empty string will be returned.
-        If an invalid string is entered for "type", then the str "NONE SELECTED" will return.
+        If an invalid string is entered for "out", then the str "NONE SELECTED" will return.
     """
     errorStr = ""
     if e_series_selection not in [3, 6, 12, 24, 48, 96, 192]:
         errorStr = "Value must be a valid E-Series number."
     
-    match type.lower():
+    match out.lower():
         case "exception":
             if errorStr:
                 raise InvalidValueError(errorStr)
@@ -659,27 +659,27 @@ def e_series_selection_check(e_series_selection: int, type="exception") -> str:
         case _:
             return "NONE SELECTED"
 
-def decade_check(decade: float, type="exception") -> str:
+def decade_check(decade: float, out: str="exception") -> str:
     """
     Checks if a float is a valid power-of-ten decade.
 
     Args:
         decade (float): Value to check.
-        type (str):     Output type.
-                        type="exception": Raises InvalidValueError exception with descriptive error message.
-                        type="str":       Only returns string, and does not raise exceptions.
+        out (str):     Output out.
+                        out="exception": Raises InvalidValueError exception with descriptive error message.
+                        out="str":       Only returns string, and does not raise exceptions.
                         Default: "exception"
     
     Returns:
-        If type="str", will return text with descriptive error message if the decade is invalid.
+        If out="str", will return text with descriptive error message if the decade is invalid.
         If the component name is valid, an empty string will be returned.
-        If an invalid string is entered for "type", then the str "NONE SELECTED" will return.
+        If an invalid string is entered for "out", then the str "NONE SELECTED" will return.
     """
     errorStr = ""
     if not log10(decade).is_integer():
         errorStr = "Value must be a decade expressed a power of 10."
     
-    match type.lower():
+    match out.lower():
         case "exception":
             if errorStr:
                 raise InvalidValueError(errorStr)
@@ -723,7 +723,7 @@ if __name__ == "__main__":
                     else:
                         raise Exception
                 component = str(component)
-                component_check(component, type="exception")
+                component_check(component, out="exception")
                 comp_str = comp_str + " " + component
             except InvalidValueError as err:
                 print(f"\033[1;31;40m{err}\033[0m\033[2F")
@@ -749,7 +749,7 @@ if __name__ == "__main__":
                     else:
                         raise Exception
                 else:
-                    relationship_check(relationship, type="exception")
+                    relationship_check(relationship, out="exception")
                     left, right = relationship.split('=')
                     sp.parse_expr(left)
                     sp.parse_expr(right)
@@ -774,7 +774,7 @@ if __name__ == "__main__":
                             print("\033[0m")
                             sys.exit("User exit at E-series selection.")
                         e_ser = int(e_ser)
-                        e_series_selection_check(e_ser, type="exception")
+                        e_series_selection_check(e_ser, out="exception")
                         e_ser_list.append(e_ser)
                         e_ser_dict[comp] = e_ser
                         break
@@ -798,7 +798,7 @@ if __name__ == "__main__":
                             print("\033[0m")
                             sys.exit("User exit at decade entry.")
                         decade = eng_to_float(decade)
-                        decade_check(decade, type="exception")
+                        decade_check(decade, out="exception")
                         break
                     except InvalidValueError as err:
                         print(f"\033[1;31;40m{err}\033[0m\033[2F")
