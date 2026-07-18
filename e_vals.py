@@ -13,6 +13,7 @@ The results will be written to the screen.
 
 import sys
 from time import time, ctime
+from math import log10
 
 try:
     import sympy as sp
@@ -532,7 +533,7 @@ def save_to_textfile(valueDict, seriesDict=None, relationships=None, footer=None
 
 
 if __name__ == "__main__":
-    while True:
+    while True: ##### MAIN PROGRAM LOOP
         print("\033[2J\033[H\033[1m\033[1;32;40mE-SERIES COMPONENT SOLVER\n\
               Determine E-series values for components based on mathematical relationships.\n\
               Enter \033[0m'EXIT'\033[1;32;40m at any time to exit.\n")
@@ -542,7 +543,7 @@ if __name__ == "__main__":
               At least one component must be entered before continuing.)\033[0m")
         
         comp_str = ""
-        while True:
+        while True: ### Component name entry
             try:
                 component = input("\033[2K\033[1;33;40mComponent:  \033[0m")
                 if component.upper() == 'EXIT':
@@ -561,14 +562,13 @@ if __name__ == "__main__":
                 print("\033[1;31;40mInvalid input.\033[0m\033[2F")
         print("\033[1F\033[2K\n")
         comp_str = comp_str[1:]
-        syms = sp.symbols(comp_str)
         
         print("\033[1;32;40mPlease enter mathematical relationships for components, one at a time:\n\
               (Press [ENTER] without input when all relationships have been entered.\n\
               At least one relationship must be entered before continuing.)\033[0m")
         
         relationship_list = []
-        while True:
+        while True: ### Relationship equation entry
             try:
                 relationship = input("\033[2K\033[1;33;40mRelationship: \033[0m")
                 if relationship.upper() == 'EXIT':
@@ -593,7 +593,7 @@ if __name__ == "__main__":
         
         e_ser_list = []
         e_ser_dict = {}
-        for comp in comp_str.split(" "):
+        for comp in comp_str.split(" "):    ### E-Series selection, per component
             if comp:
                 while True:
                     try:
@@ -617,7 +617,7 @@ if __name__ == "__main__":
               (Must be entered as a power of 10, and engineering notation can be used.\n\
               NOTE: Not all components will fall within preferred decade.)\033[0m")
         decade_list = []
-        for comp in comp_str.split(" "):
+        for comp in comp_str.split(" "):    ### Decade selection, per component
             if comp:
                 while True:
                     try:
@@ -626,21 +626,24 @@ if __name__ == "__main__":
                             print("\033[0m")
                             sys.exit("User exit at decade entry.")
                         decade = eng_to_float(decade)
-                        decade_list.append(decade)
+                        if log10(decade).is_integer():  #Checks if decade is power of 10
+                            decade_list.append(decade)
+                        else:
+                            raise Exception
                         break
                     except Exception:
                         print("\033[1;31;40mInvalid input.\033[0m\033[2F")
         print("\033[2K\n")
         print() 
     
-        time1 = int(time())
+        time1 = time() #Used to calculate calculation elapsed time
         try:
             values = e_val_select(comp_str, relationship_list, e_ser_list, decade_list)
         except ValueError as error:
             print(f"\033[1;31;40m{error}\033[0m")
             input()
             sys.exit(1)
-        time2 = int(time())
+        time2 = time()
         elapsed = round(time2 - time1, 3)
         if elapsed == 1.0:
             computed_time = f"{elapsed} second."
@@ -653,7 +656,7 @@ if __name__ == "__main__":
         print_e_val_results(values, e_ser_dict)
 
         print("\n\n\n\n")
-        while True:
+        while True: ### End option selection
             print("\033[2F\033[2K\033[1;33;40m[Enter [S] to save to textfile or [R] to re-run with new values, \
                   otherwise press [ENTER] to quit.]\033[0m\033[1E")
             
