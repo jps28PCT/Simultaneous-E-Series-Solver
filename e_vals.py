@@ -308,12 +308,12 @@ def eng_note(inputValue: float, numSigFigs: int=0, encoding: str="ASCII") -> str
         return f"{'0  ':>{numSigFigs+1}}"
     elif newVal == float('inf'):
         if encoding.upper() == "UTF-8":
-            return f"{'\u221E  ':>{numSigFigs+1}}"
+            return f"\u221E{'  ':>{numSigFigs+1}}"
         else:
             return f"{'inf  ':>{numSigFigs+1}}"
     elif newVal == float('-inf'):
         if encoding.upper() == "UTF-8":
-            return f"{'-\u221E  ':>{numSigFigs+1}}"
+            return f"-\u221E{'  ':>{numSigFigs+1}}"
         else:   
             return f"{'-inf  ':>{numSigFigs+1}}"
     
@@ -539,8 +539,8 @@ def save_to_textfile(valueDict, seriesDict: dict=None, relationships: list=None,
                 sigfigs = 3
         else:
             sigfigs = 3
-        file.write(f"{component}: {eng_note(valueDict[component][0], sigfigs, encoding="UTF-8")}\t\t\
-                   Error: {valueDict[component][1]*100:.3f}%\n")
+        file.write(f"{component}: {eng_note(valueDict[component][0], sigfigs, encoding='UTF-8')}\t\t"
+                   f"Error: {valueDict[component][1]*100:.3f}%\n")
 
     if seriesDict:
         file.write("\n\n__________________________________________________\n\n")
@@ -820,6 +820,7 @@ if __name__ == "__main__":
                             sys.exit("User exit at decade entry.")
                         decade = eng_to_float(decade)
                         decade_check(decade, out="exception")
+                        decade_list.append(decade)
                         break
                     except InvalidValueError as err:
                         print(f"\033[1;31;40m{err}\033[0m\033[2F")
@@ -849,8 +850,8 @@ if __name__ == "__main__":
 
         print("\n\n\n\n")
         while True: ### End option selection
-            print("\033[2F\033[2K\033[1;33;40m[Enter [S] to save to textfile or [R] to re-run with new values, \
-                  otherwise press [ENTER] to quit.]\033[0m\033[1E")
+            print("\033[2F\033[2K\033[1;33;40m[Enter [S] to save to textfile or [R] to re-run with new values, "
+                  "otherwise press [ENTER] to quit.]\033[0m\033[1E")
             
             option = input("\033[2K").upper()
             if option == 'S':
