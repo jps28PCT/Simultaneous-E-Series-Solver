@@ -340,26 +340,27 @@ def eng_note(inputValue, numSigFigs=0) -> str:
             newVal = round(newVal)
             newVal = newVal * 10**temp_exp
 
+    tempSigFigs = numSigFigs
     if abs(newVal) < 10:
-        numsAfterDecimal = numSigFigs - 1
+        numsAfterDecimal = tempSigFigs - 1
     elif abs(newVal) < 100:
-        numsAfterDecimal = numSigFigs - 2
+        numsAfterDecimal = tempSigFigs - 2
     else:
-        numsAfterDecimal = numSigFigs - 3
+        numsAfterDecimal = tempSigFigs - 3
     if numsAfterDecimal < 0:
-        numSigFigs = 3
+        tempSigFigs = 3
         numsAfterDecimal = 0
             
     if numSigFigs == 0:
         returnVal = str(newVal)
     else:
-        returnVal = f"{newVal:>{numSigFigs}.{numsAfterDecimal}f}"
+        returnVal = f"{newVal:>{tempSigFigs}.{numsAfterDecimal}f}"
 
     if abs(exponent) > 24:
         if numSigFigs == 0:
             returnVal = f"{inputValue:e}"
         else:
-            returnVal = f"{inputValue:>.{numSigFigs-1}e}"
+            returnVal = f"{inputValue:>.{tempSigFigs-1}e}"
     
     match exponent:
         case 24:
