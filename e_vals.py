@@ -482,7 +482,20 @@ def eng_to_float(inputStr: str) -> float:
 
 
 
-def save_to_textfile(valueDict, seriesDict=None, relationships=None, footer=None) -> str:
+def save_to_textfile(valueDict, seriesDict={}, relationships=[], header="", footer="") -> str:
+    """
+    Writes results of e_val_select() to a text file. Name of text file is generated based on UNIX timestamp.
+
+    Args:
+        valueDict (dict):       Returned dictionary from e_val_select()
+        seriesDict (dict):      (Optional) Dictionary with component names as keys and selected E-Series as values
+        relationships (list):   (Optional) List of component relationships, as strings
+        header (str):           (Optional) Line of text to print at beginning of text file
+        footer (str):           (Optional) Line of text to print at end of text file
+    
+    Returns:
+        Name of text file, as str.
+    """
     timeInt = int(time())
     humanTime = ctime()
 
@@ -492,6 +505,9 @@ def save_to_textfile(valueDict, seriesDict=None, relationships=None, footer=None
     file.write(f"┌───────────────────────────────────────────────────┐\n")
     file.write(f"│ E - S E R I E S   C O M P O N E N T   V A L U E S │\n")
     file.write(f"└───────────────────────────────────────────────────┘\n\n")
+
+    if header:
+        file.write(f"\n{header}\n\n")
     
     file.write("\nR E S U L T S :\n\n")
     for component in valueDict:
@@ -545,13 +561,13 @@ before calling e_val_select().
 
 class InvalidValueError(Exception):
     """
-    Exception for when component_check, relationship_check, e_series_selection_check, and decade_check fail.
+    Exception for use by component_check, relationship_check, e_series_selection_check, and decade_check.
     This ensures that these cases can be handled seperately from other exceptions, to improve clarity.    
     """
 
 def component_check(component: str, type="exception") -> str:
     """
-    This function checks if a component name follows form expected for SymPy.
+    Checks if a component name follows form expected for SymPy.
     A component name must start with a letter, and can only contain letters, numbers, and underscores.
 
     Args:
@@ -583,7 +599,7 @@ def component_check(component: str, type="exception") -> str:
 
 def relationship_check(relationship: str, type="exception") -> str:
     """
-    This function checks if a relationship equation follows form expected by the e_val_select() engine.
+    Checks if a relationship equation follows form expected by the e_val_select() engine.
     It will not check for all possible SymPy syntax issues, but rather guards against common syntax mistakes.
 
     Args:
@@ -616,7 +632,7 @@ def relationship_check(relationship: str, type="exception") -> str:
 
 def e_series_selection_check(e_series_selection: int, type="exception") -> str:
     """
-    This function checks if an integer is a valid E-Series number.
+    Checks if an integer is a valid E-Series number.
 
     Args:
         e_series_selection (int):   E-Series number to check
@@ -645,7 +661,7 @@ def e_series_selection_check(e_series_selection: int, type="exception") -> str:
 
 def decade_check(decade: float, type="exception") -> str:
     """
-    This function checks if a float is a valid power-of-ten decade.
+    Checks if a float is a valid power-of-ten decade.
 
     Args:
         decade (float): Value to check.
