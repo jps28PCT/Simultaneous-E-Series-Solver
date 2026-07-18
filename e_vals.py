@@ -251,7 +251,7 @@ def e_val_select(components: str, relationships: list, e_series_selection: list,
 
 
 
-def print_e_val_results(valueDict, seriesDict=None) -> None:
+def print_e_val_results(valueDict: dict, seriesDict={}) -> None:
     """
     Prints the results of e_val_select() to terminal for display.
 
@@ -270,7 +270,7 @@ def print_e_val_results(valueDict, seriesDict=None) -> None:
     print("\033[1;36;40m└───────────────────────────────────────┘\033[0m")
 
     for component in valueDict:
-        if component in seriesDict:
+        if seriesDict and component in seriesDict:
             if seriesDict[component] in [3, 6, 12, 24]:
                 sigfigs = 2
             else:
