@@ -17,7 +17,8 @@ from time import time, ctime
 try:
     import sympy as sp
 except ModuleNotFoundError:
-    print("\033[1;31;40mSymPy must be installed to run.\nPlease run \033[0mpip install sympy\033[1;31;40m in the terminal.\033[0m")
+    print("\033[1;31;40mSymPy must be installed to run.\nPlease run \
+          \033[0mpip install sympy\033[1;31;40m in the terminal.\033[0m")
     print("\033[1;31;40mPress \033[0m[ENTER]\033[1;31;40m to exit.\033[0m")
     input()
     sys.exit(1)
@@ -55,15 +56,59 @@ def e_val_select(components: str, relationships: list, e_series_selection: list,
             case 6:
                 e_vals = [1.0, 1.5, 2.2, 3.3, 4.7, 6.8]
             case 12:
-                e_vals = [1.0, 1.2, 1.5, 1.8, 2.2, 2.7, 3.3, 3.9, 4.7, 5.6, 6.8, 8.2]
+                e_vals = [1.0, 1.2, 1.5, 1.8, 2.2, 2.7, 
+                          3.3, 3.9, 4.7, 5.6, 6.8, 8.2]
             case 24:
-                e_vals = [1.0, 1.1, 1.2, 1.3, 1.5, 1.6, 1.8, 2.0, 2.2, 2.4, 2.7, 3.0, 3.3, 3.6, 3.9, 4.3, 4.7, 5.1, 5.6, 6.2, 6.8, 7.5, 8.2, 9.1]
+                e_vals = [1.0, 1.1, 1.2, 1.3, 1.5, 1.6, 
+                          1.8, 2.0, 2.2, 2.4, 2.7, 3.0, 
+                          3.3, 3.6, 3.9, 4.3, 4.7, 5.1, 
+                          5.6, 6.2, 6.8, 7.5, 8.2, 9.1]
             case 48:
-                e_vals = [1.00, 1.05, 1.10, 1.15, 1.21, 1.27, 1.33, 1.40, 1.47, 1.54, 1.62, 1.69, 1.78, 1.87, 1.96, 2.05, 2.15, 2.26, 2.37, 2.49, 2.61, 2.74, 2.87, 3.01, 3.16, 3.32, 3.48, 3.65, 3.83, 4.02, 4.22, 4.42, 4.64, 4.87, 5.11, 5.36, 5.62, 5.90, 6.19, 6.49, 6.81, 7.15, 7.50, 7.87, 8.25, 8.66, 9.09, 9.53]
+                e_vals = [1.00, 1.05, 1.10, 1.15, 1.21, 1.27, 1.33, 1.40, 
+                          1.47, 1.54, 1.62, 1.69, 1.78, 1.87, 1.96, 2.05, 
+                          2.15, 2.26, 2.37, 2.49, 2.61, 2.74, 2.87, 3.01, 
+                          3.16, 3.32, 3.48, 3.65, 3.83, 4.02, 4.22, 4.42, 
+                          4.64, 4.87, 5.11, 5.36, 5.62, 5.90, 6.19, 6.49, 
+                          6.81, 7.15, 7.50, 7.87, 8.25, 8.66, 9.09, 9.53]
             case 96:
-                e_vals = [1.00, 1.02, 1.05, 1.07, 1.10, 1.13, 1.15, 1.18, 1.21, 1.24, 1.27, 1.30, 1.33, 1.37, 1.40, 1.43, 1.47, 1.50, 1.54, 1.58, 1.62, 1.65, 1.69, 1.74, 1.78, 1.82, 1.87, 1.91, 1.96, 2.00, 2.05, 2.10, 2.15, 2.21, 2.26, 2.32, 2.37, 2.43, 2.49, 2.55, 2.61, 2.67, 2.74, 2.80, 2.87, 2.94, 3.01, 3.09, 3.16, 3.24, 3.32, 3.40, 3.48, 3.57, 3.65, 3.74, 3.83, 3.92, 4.02, 4.12, 4.22, 4.32, 4.42, 4.53, 4.64, 4.75, 4.87, 4.99, 5.11, 5.23, 5.36, 5.49, 5.62, 5.76, 5.90, 6.04, 6.19, 6.34, 6.49, 6.65, 6.81, 6.98, 7.15, 7.32, 7.50, 7.68, 7.87, 8.06, 8.25, 8.45, 8.66, 8.87, 9.09, 9.31, 9.53, 9.76]
+                e_vals = [1.00, 1.02, 1.05, 1.07, 1.10, 1.13, 1.15, 1.18, 
+                          1.21, 1.24, 1.27, 1.30, 1.33, 1.37, 1.40, 1.43, 
+                          1.47, 1.50, 1.54, 1.58, 1.62, 1.65, 1.69, 1.74, 
+                          1.78, 1.82, 1.87, 1.91, 1.96, 2.00, 2.05, 2.10, 
+                          2.15, 2.21, 2.26, 2.32, 2.37, 2.43, 2.49, 2.55, 
+                          2.61, 2.67, 2.74, 2.80, 2.87, 2.94, 3.01, 3.09, 
+                          3.16, 3.24, 3.32, 3.40, 3.48, 3.57, 3.65, 3.74, 
+                          3.83, 3.92, 4.02, 4.12, 4.22, 4.32, 4.42, 4.53, 
+                          4.64, 4.75, 4.87, 4.99, 5.11, 5.23, 5.36, 5.49, 
+                          5.62, 5.76, 5.90, 6.04, 6.19, 6.34, 6.49, 6.65, 
+                          6.81, 6.98, 7.15, 7.32, 7.50, 7.68, 7.87, 8.06, 
+                          8.25, 8.45, 8.66, 8.87, 9.09, 9.31, 9.53, 9.76]
             case 192:
-                e_vals = [1.00, 1.01, 1.02, 1.04, 1.05, 1.06, 1.07, 1.09, 1.10, 1.11, 1.13, 1.14, 1.15, 1.17, 1.18, 1.20, 1.21, 1.23, 1.24, 1.26, 1.27, 1.29, 1.30, 1.32, 1.33, 1.35, 1.37, 1.38, 1.40, 1.42, 1.43, 1.45, 1.47, 1.49, 1.50, 1.52, 1.54, 1.56, 1.58, 1.60, 1.62, 1.64, 1.65, 1.67, 1.69, 1.72, 1.74, 1.76, 1.78, 1.80, 1.82, 1.84, 1.87, 1.89, 1.91, 1.93, 1.96, 1.98, 2.00, 2.03, 2.05, 2.08, 2.10, 2.13, 2.15, 2.18, 2.21, 2.23, 2.26, 2.29, 2.32, 2.34, 2.37, 2.40, 2.43, 2.46, 2.49, 2.52, 2.55, 2.58, 2.61, 2.64, 2.67, 2.71, 2.74, 2.77, 2.80, 2.84, 2.87, 2.91, 2.94, 2.98, 3.01, 3.05, 3.09, 3.12, 3.16, 3.20, 3.24, 3.28, 3.32, 3.36, 3.40, 3.44, 3.48, 3.52, 3.57, 3.61, 3.65, 3.70, 3.74, 3.79, 3.83, 3.88, 3.92, 3.97, 4.02, 4.07, 4.12, 4.17, 4.22, 4.27, 4.32, 4.37, 4.42, 4.48, 4.53, 4.59, 4.64, 4.70, 4.75, 4.81, 4.87, 4.93, 4.99, 5.05, 5.11, 5.17, 5.23, 5.30, 5.36, 5.42, 5.49, 5.56, 5.62, 5.69, 5.76, 5.83, 5.90, 5.97, 6.04, 6.12, 6.19, 6.26, 6.34, 6.42, 6.49, 6.57, 6.65, 6.73, 6.81, 6.90, 6.98, 7.06, 7.15, 7.23, 7.32, 7.41, 7.50, 7.59, 7.68, 7.77, 7.87, 7.96, 8.06, 8.16, 8.25, 8.35, 8.45, 8.56, 8.66, 8.76, 8.87, 8.98, 9.09, 9.20, 9.31, 9.42, 9.53, 9.65, 9.76, 9.88]
+                e_vals = [1.00, 1.01, 1.02, 1.04, 1.05, 1.06, 1.07, 1.09, 
+                          1.10, 1.11, 1.13, 1.14, 1.15, 1.17, 1.18, 1.20, 
+                          1.21, 1.23, 1.24, 1.26, 1.27, 1.29, 1.30, 1.32, 
+                          1.33, 1.35, 1.37, 1.38, 1.40, 1.42, 1.43, 1.45, 
+                          1.47, 1.49, 1.50, 1.52, 1.54, 1.56, 1.58, 1.60, 
+                          1.62, 1.64, 1.65, 1.67, 1.69, 1.72, 1.74, 1.76, 
+                          1.78, 1.80, 1.82, 1.84, 1.87, 1.89, 1.91, 1.93, 
+                          1.96, 1.98, 2.00, 2.03, 2.05, 2.08, 2.10, 2.13, 
+                          2.15, 2.18, 2.21, 2.23, 2.26, 2.29, 2.32, 2.34, 
+                          2.37, 2.40, 2.43, 2.46, 2.49, 2.52, 2.55, 2.58, 
+                          2.61, 2.64, 2.67, 2.71, 2.74, 2.77, 2.80, 2.84, 
+                          2.87, 2.91, 2.94, 2.98, 3.01, 3.05, 3.09, 3.12, 
+                          3.16, 3.20, 3.24, 3.28, 3.32, 3.36, 3.40, 3.44, 
+                          3.48, 3.52, 3.57, 3.61, 3.65, 3.70, 3.74, 3.79, 
+                          3.83, 3.88, 3.92, 3.97, 4.02, 4.07, 4.12, 4.17, 
+                          4.22, 4.27, 4.32, 4.37, 4.42, 4.48, 4.53, 4.59, 
+                          4.64, 4.70, 4.75, 4.81, 4.87, 4.93, 4.99, 5.05, 
+                          5.11, 5.17, 5.23, 5.30, 5.36, 5.42, 5.49, 5.56, 
+                          5.62, 5.69, 5.76, 5.83, 5.90, 5.97, 6.04, 6.12, 
+                          6.19, 6.26, 6.34, 6.42, 6.49, 6.57, 6.65, 6.73, 
+                          6.81, 6.90, 6.98, 7.06, 7.15, 7.23, 7.32, 7.41, 
+                          7.50, 7.59, 7.68, 7.77, 7.87, 7.96, 8.06, 8.16, 
+                          8.25, 8.35, 8.45, 8.56, 8.66, 8.76, 8.87, 8.98, 
+                          9.09, 9.20, 9.31, 9.42, 9.53, 9.65, 9.76, 9.88]
+                
         e_series_array.append(e_vals)
     
     for value in decade:
@@ -216,7 +261,10 @@ def print_e_val_results(valueDict, seriesDict=None) -> None:
             After printing to the terminal, None.
     """
 
-    print("\033[1;36;40m┌───────────────────────────────────────┐\n│            R E S U L T S :            │\n└───────────────────────────────────────┘\033[0m")
+    print("\033[1;36;40m┌───────────────────────────────────────┐\033[0m")
+    print("\033[1;36;40m│            R E S U L T S :            │\033[0m")
+    print("\033[1;36;40m└───────────────────────────────────────┘\033[0m")
+
     for component in valueDict:
         if component in seriesDict:
             if seriesDict[component] in [3, 6, 12, 24]:
@@ -225,7 +273,8 @@ def print_e_val_results(valueDict, seriesDict=None) -> None:
                 sigfigs = 3
         else:
             sigfigs = 3
-        print(f"\033[1;33;40m{component}:\033[0m {eng_note(valueDict[component][0], sigfigs)}\t\t\033[1;36;40mError:\033[0m {valueDict[component][1]*100:.3f}%")
+        print(f"\033[1;33;40m{component}:\033[0m {eng_note(valueDict[component][0], sigfigs)} \
+              \t\t\033[1;36;40mError:\033[0m {valueDict[component][1]*100:.3f}%")
 
     return None
     
@@ -420,7 +469,8 @@ def eng_to_float(inputStr: str) -> float:
         case 'y':
             exponent = -24
         case _:
-            raise ValueError(f"'{prefixStr}' is an invalid engineering notation prefix. Prefix must be between 10^-24 (y-) and 10^24 (Y-).")
+            raise ValueError(f"'{prefixStr}' is an invalid engineering notation prefix. \
+                             Prefix must be between 10^-24 (y-) and 10^24 (Y-).")
         
     returnNum = float(numStr) * 10**exponent
     return returnNum
@@ -434,8 +484,10 @@ def save_to_textfile(valueDict, seriesDict=None, relationships=None, footer=None
     fileName = f"e_series_values_{timeInt}.txt"
     file = open(fileName, 'w', encoding="utf-8")
 
-    file.write(f"┌───────────────────────────────────────────┐\n│ E - S E R I E S   C O M P O N E N T   V A L U E S │\n└───────────────────────────────────────────┘\n\n")
-
+    file.write(f"┌───────────────────────────────────────────────────┐\n")
+    file.write(f"│ E - S E R I E S   C O M P O N E N T   V A L U E S │\n")
+    file.write(f"└───────────────────────────────────────────────────┘\n\n")
+    
     file.write("\nR E S U L T S :\n\n")
     for component in valueDict:
         if component in seriesDict:
@@ -445,7 +497,8 @@ def save_to_textfile(valueDict, seriesDict=None, relationships=None, footer=None
                 sigfigs = 3
         else:
             sigfigs = 3
-        file.write(f"{component}: {eng_note(valueDict[component][0], sigfigs)}\t\tError: {valueDict[component][1]*100:.3f}%\n")
+        file.write(f"{component}: {eng_note(valueDict[component][0], sigfigs)}\t\t\
+                   Error: {valueDict[component][1]*100:.3f}%\n")
 
     if seriesDict:
         file.write("\n\n__________________________________________________\n\n")
@@ -479,9 +532,14 @@ def save_to_textfile(valueDict, seriesDict=None, relationships=None, footer=None
 
 if __name__ == "__main__":
     while True:
-        print("\033[2J\033[H\033[1m\033[1;32;40mE-SERIES COMPONENT SOLVER\nDetermine E-series values for components based on mathematical relationships.\nEnter \033[0m'EXIT'\033[1;32;40m at any time to exit.\n")
+        print("\033[2J\033[H\033[1m\033[1;32;40mE-SERIES COMPONENT SOLVER\n\
+              Determine E-series values for components based on mathematical relationships.\n\
+              Enter \033[0m'EXIT'\033[1;32;40m at any time to exit.\n")
         
-        print("\033[1;32;40mPlease enter names of components, one at a time:\n(Press [ENTER] without input when all components have been entered.\nAt least one component must be entered before continuing.)\033[0m")
+        print("\033[1;32;40mPlease enter names of components, one at a time:\n\
+              (Press [ENTER] without input when all components have been entered.\n\
+              At least one component must be entered before continuing.)\033[0m")
+        
         comp_str = ""
         while True:
             try:
@@ -504,7 +562,10 @@ if __name__ == "__main__":
         comp_str = comp_str[1:]
         syms = sp.symbols(comp_str)
         
-        print("\033[1;32;40mPlease enter mathematical relationships for components, one at a time:\n(Press [ENTER] without input when all relationships have been entered.\nAt least one relationship must be entered before continuing.)\033[0m")
+        print("\033[1;32;40mPlease enter mathematical relationships for components, one at a time:\n\
+              (Press [ENTER] without input when all relationships have been entered.\n\
+              At least one relationship must be entered before continuing.)\033[0m")
+        
         relationship_list = []
         while True:
             try:
@@ -526,7 +587,9 @@ if __name__ == "__main__":
                 print("\033[1;31;40mInvalid input.\033[0m\033[2F")
         print("\033[1F\033[2K\n")
         
-        print("\033[1;32;40mPlease enter the E-series for each component value:\n(Valid E-series are: 3, 6, 12, 24, 48, 96, 192)\033[0m")
+        print("\033[1;32;40mPlease enter the E-series for each component value:\n\
+              (Valid E-series are: 3, 6, 12, 24, 48, 96, 192)\033[0m")
+        
         e_ser_list = []
         e_ser_dict = {}
         for comp in comp_str.split(" "):
@@ -549,7 +612,9 @@ if __name__ == "__main__":
         print()
         print("\033[1F\033[2K\n")
         
-        print("\033[1;32;40mPlease enter the preferred decade for each component:\n(Must be entered as a power of 10, and engineering notation can be used.\nNOTE: Not all components will fall within preferred decade.)\033[0m")
+        print("\033[1;32;40mPlease enter the preferred decade for each component:\n\
+              (Must be entered as a power of 10, and engineering notation can be used.\n\
+              NOTE: Not all components will fall within preferred decade.)\033[0m")
         decade_list = []
         for comp in comp_str.split(" "):
             if comp:
@@ -588,7 +653,9 @@ if __name__ == "__main__":
 
         print("\n\n\n\n")
         while True:
-            print("\033[2F\033[2K\033[1;33;40m[Enter [S] to save to textfile or [R] to re-run with new values, otherwise press [ENTER] to quit.]\033[0m\033[1E")
+            print("\033[2F\033[2K\033[1;33;40m[Enter [S] to save to textfile or [R] to re-run with new values, \
+                  otherwise press [ENTER] to quit.]\033[0m\033[1E")
+            
             option = input("\033[2K").upper()
             if option == 'S':
                 name = save_to_textfile(values, e_ser_dict, relationship_list, footer=f"Computed in {computed_time}")
