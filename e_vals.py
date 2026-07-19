@@ -29,7 +29,7 @@ except ModuleNotFoundError:
 
     
 
-def e_val_select(components: str, relationships: list, e_series_selection: list, decade: list) -> dict:
+def e_val_select(components: str, relationships: list, e_series_selection: tuple, decade_selection: tuple) -> dict:
     """
     Finds E-series of preferred numbers values for components based on mathematical relationships.
     This function will identify the values that minimize error between the real values and the E-series values.
@@ -40,17 +40,21 @@ def e_val_select(components: str, relationships: list, e_series_selection: list,
                                     Example: "R1 R2 C1 L1"
         relationships (list):       List of strings representing mathematical relationships of the components.
                                     Example: ["R2 / R1 = 2", "1 / (C1 * L1) = 500", "(R1 + R2) / (C1 + L1) = 2"]
-        e_series_selection (list):  List of E-series to use for each component, in the same order as "components".
+        e_series_selection (tuple): List of E-series to use for each component, in the same order as "components".
                                     Must be 3, 6, 12, 24, 48, 96, or 192.
-                                    Example: [24, 24, 12, 6]  (for R1 to be in E24, R2 to be in E24, C1 to be in E12, and L1 to be in E6.)
-        decade (list):              List of preferrred decade value for each component's E-series values, in the same order as "components".
+                                    Example: (24, 24, 12, 6)
+                                            For R1 to be in E24, R2 in E24, C1 in E12, and L1 in E6.
+        decade_selection (tuple):   List of preferrred decade value for each component's E-series values, in the same 
+                                    order as "components".
                                     Since it cannot be predicted what component SymPy will initially solve for,
-                                    all of the components may not be within their preferred decade.
+                                    not all components may be within their preferred decade.
                                     This value can either be a float or a string in engineering notation.
-                                    Examples: 1, 10, 10000, 0.0001, '10k', '100u'.
+                                    Example: (1000, '10k', 0.000001, '100u')
+                                             For R1 to be within 1k, R2 within 10k, C1 within 1µ, and L1 within 200µ.
     
     Returns:
         Dictionary, with component names as keys, and tuple containing (VALUE, ERROR) as values.
+        'VALUE' is the calculated E-Series value, and 'ERROR' is the percent error between the E-Series value and the ideal.
     """
     e_series_array = []
     for item in e_series_selection:
@@ -115,8 +119,9 @@ def e_val_select(components: str, relationships: list, e_series_selection: list,
                 
         e_series_array.append(e_vals)
     
-    for value in decade:
-        decade[decade.index(value)] = eng_to_float(str(value))
+    decade = []
+    for value in decade_selection:
+        decade.append(eng_to_float(str(value)))
     symList = components.split(' ')
     if len(symList) == 0:
         raise Exception("No Components were passed. Unable to continue.")
@@ -821,7 +826,7 @@ if __name__ == "__main__":
         print("\033[1;32;40mPlease enter the E-series for each component value:\n"
               "(Valid E-series are: 3, 6, 12, 24, 48, 96, 192)\033[0m")
         
-        e_ser_list = []
+        e_ser_tup = ()
         e_ser_dict = {}
         for comp in comp_str.split(" "):    ### E-Series selection, per component
             if comp:
@@ -833,7 +838,7 @@ if __name__ == "__main__":
                             sys.exit("User exit at E-series selection.")
                         e_ser = int(e_ser)
                         e_series_selection_check(e_ser, out="exception")
-                        e_ser_list.append(e_ser)
+                        e_ser_tup = e_ser_tup + (e_ser, )
                         e_ser_dict[comp] = e_ser
                         break
                     except InvalidValueError as err:
@@ -846,7 +851,7 @@ if __name__ == "__main__":
         print("\033[1;32;40mPlease enter the preferred decade for each component:\n"
               "(Must be entered as a power of 10, and engineering notation can be used.\n"
               "NOTE: Not all components will fall within preferred decade.)\033[0m")
-        decade_list = []
+        decade_tup = ()
         for comp in comp_str.split(" "):    ### Decade selection, per component
             if comp:
                 while True:
@@ -857,7 +862,7 @@ if __name__ == "__main__":
                             sys.exit("User exit at decade entry.")
                         decade = eng_to_float(decade)
                         decade_check(decade, out="exception")
-                        decade_list.append(decade)
+                        decade_tup = decade_tup + (decade, )
                         break
                     except InvalidValueError as err:
                         print(f"\033[1;31;40m{err}\033[0m\033[2F")
@@ -868,7 +873,7 @@ if __name__ == "__main__":
     
         time1 = time() #Used to calculate calculation elapsed time
         try:
-            values = e_val_select(comp_str, relationship_list, e_ser_list, decade_list)
+            values = e_val_select(comp_str, relationship_list, e_ser_tup, decade_tup)
         except ValueError as error:
             print(f"\033[1;31;40m{error}\033[0m")
             input("Press [ENTER] to quit.\n")
