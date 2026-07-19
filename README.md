@@ -125,6 +125,8 @@ The goal is to create an LC tank circuit resonant at 1.5 kHz, using an E-24 indu
 ```math
 f= \frac{1}{2\pi \sqrt{LC}}
 ```
+<br/>
+
 ```ansi
 E-SERIES COMPONENT SOLVER
 Determine E-series values for components based on mathematical relationships.
@@ -237,5 +239,15 @@ Dictionary with component names as keys, and tuples containing (`E_VALUE`, `ERRO
 - `ERROR` is the raw decimal percent error between the calculated E-Series value and the ideal value, as a decimal float.
 
 ##### Example: `{'R1': (160.0, 0.058823529411764705), 'R2': (330.0, 0.0)}`
-> R<sub>1</sub> = 160 Ω, with 5.882% error<br/>
-> R<sub>2</sub> = 330 Ω, with 0% error
+- R<sub>1</sub> = 160 Ω, with 5.882% error<br/>
+- R<sub>2</sub> = 330 Ω, with 0% error
+
+<br/>
+
+#### Raises:
+`ValueError` if a negative or zero component value is calculated.<br/>
+This indicates the relationship equations are unsolvable for real-world component values.
+
+<br/>
+
+### Custom Script Example
