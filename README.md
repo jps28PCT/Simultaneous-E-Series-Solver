@@ -1,36 +1,175 @@
 # Simultaneous E-Series Value Solver
 This application automates the process of component value selection in real-world systems.<br/>
 <br/>
-This program solves systems of component-relationship equations for real-world [E-Series](https://wikipedia.org/wiki/E_series_of_preferred_numbers) values. The systems can be fully-determined or under-determined. Every combination of E-Series values is tested based on selected parameters, and the combination with the smallest error is found.
+The program solves systems of component-relationship equations for real-world [E-Series](https://wikipedia.org/wiki/E_series_of_preferred_numbers) values. The systems can be fully-determined or under-determined. Every combination of E-Series values is tested based on selected parameters, and the combination with the smallest error is found.
 
 > [!NOTE]
 > Requires Python 3.11 or later and SymPy 1.13.3 or later.<br/>
-> If run without SymPy installed, a warning will be printed and the program will end.
-
-## Running as a Script
-This program is intended to be run as a script.<br/>
-When running as a script, The program will prompt sequentially for each input.<br/>
-<br/>
-First, component names will be entered. Names must start with a letter, and letters and numbers can follow. Names can be of any length.<br/>
-It is recommended to use standard schematic [component reference designators](https://wikipedia.org/wiki/Reference_designator).<br/>
-When finished entering components, press `[ENTER]` on the empty input line.<br/>
+> If run without SymPy installed, a warning will be printed and the program will end.<br/>
 <br/>
 
-Next, component relationship equations are entered. These equations should be based on the topology of the circuit, and should reflect the desired effect for the circuit. They can be based on standard circuit equations for known topologies, or they can be found analytically through mesh/nodal circuit analysis. Use standard Python and SymPy algebraic operators. All equations must include an equals sign (`=`).<br/>
+The file `e_vals.py` can be run either as a script, or used as an API.<br/>
+
+The solver reqires component names, component relationships, component E-Series, and desired component decades in order to solve for the best real-world component values. 
+
+
+### Component Names
+Component names must start with a letter, and letters and numbers can follow. Names can be of any length. It is recommended to use standard schematic [component reference designators](https://wikipedia.org/wiki/Reference_designator).<br/>
+#### Examples:
+`R1`, `R2`, `C1`, `L1`, etc.
+
+
+### Component Relationship Equations
+These equations should be based on the topology of the circuit, and should reflect the desired effect for the circuit. They can be based on standard circuit equations for known topologies, or they can be found analytically through mesh/nodal circuit analysis. Use standard Python and SymPy algebraic operators. All equations must include an equals sign (`=`). Pre-defined constants are also available. Values can be multiplied by [engineering notation prefixes](https://en.wikipedia.org/wiki/Engineering_notation), from "yotta-" (10<sup>24</sup>) to "yocto-" (10<sup>-24</sup>) [use '`u`' for 'micro'].<br/>
 When finished entering component relationships, press `[ENTER]` on the empty input line.
 
-### Valid Operators
-| Operator | Example | Use |
-| :---: | :---: | :---: |
-| `+` | `A+B` | addition |
-| `-` | `A-B` | subtraction |
-| `*` | `A*B` | multiplication |
-| `/` | `A/B` | division |
-| `**` | `A**B` | exponentiation |
-| `sqrt( )` | `sqrt(A)` | square root |
-| `**(1/n)` | `A**(1/B)` | n-th root |
+#### Examples:
+`3.3 = 5 * (R1/(R1+R2))`<br/>
+`1*k = 1 / (2 * pi * sqrt(L1 * C1))`<br/>
+
+#### Valid Operators
+| Operator | Use |   | Operator | Use |
+| :---: | :---: | :---: | :---: | :---: |
+| `+` | addition |   | `**`| exponentiation |
+| `-` | subtraction |   | `sqrt(X)` | square root |
+| `*` | multiplication |   | `X**(1/n)` | n-th root |
+| `/` | division |   | `log(X, n)` | log, base n|
+
+#### Pre-Defined Constants
+| Constant | Symbol | Value |
+| :---: | :---: | :--- |
+| π | `pi` | 3.14159265358979323846264338327950 |
+| e | `e` | 2.71828182845904523536028747135266 |
+| ϕ | `phi` | 1.61803398874989484820458683436563 |
+| √2 | `sqrt_2` | 1.41421356237309504880168872420969 |
+| √3 | `sqrt_3` | 1.73205080756887729352744634150587 |
+
+
+### Component E-Series
+Each component must be associated with an E-Series. Higher E-Series have smaller steps between values, and thus have more values per decade. Each series also has sequentially smaller maximum tolerance.
+
+#### E-Series Numbers:
+`3`, `6`, `12`, `24`, `48`, `96`, `192`
+
+
+### Decades
+Each component must also be associated with a desired decade. Decades can be entered as decimal values, or in scientific or engineering notation. They must be valid powers of 10. Some components' values may not fall within their decade, as the final values are dictated by the relationship equations.
+
+#### Examples:
+`1`, `100`, `0.001`, `10k`, `100u`, `1e17`, `1e-11`, etc.
+
 <br/>
 
-Next, E-series are selected for each entered component. Only the number of the series should be entered. The program will proceed once every component has been associated with an E-Series.<br/>
+## Running as a Script
+Running as a script allows the program to be used as a CLI application.<br/>
+
+
+##### To run, open the file directly, or open the file's directory in a terminal and type the following command:
+```bash
+$ python e_vals.py
+```
+
+The program will prompt sequentially for each input. At any time, type `EXIT` to exit.
 <br/>
-Lastly, the desired decade is selected for each component. Decades
+
+### Inputs
+First, component names will be entered.  When finished entering components, press `[ENTER]` on the empty input line.
+```ansi
+Component:  R1
+Component:  R2
+Component:
+```
+<br/>
+
+Second, component relationship equations are entered. 
+```ansi
+Relationship: 3.3 = 5 * (R2 / (R1 + R2))
+Relationship:
+```
+<br/>
+
+Next, E-Series are selected for each entered component. Only the number of the series should be entered. The program will proceed once every component has been associated with an E-Series.
+```ansi
+E-Series for R1: 24
+E-Series for R2: 24
+```
+<br/>
+
+Lastly, the desired decade is selected for each component. The program will proceed once every component has been associated with a decade.
+```ansi
+Decade for R1: 10k
+Decade for R2: 1k
+```
+<br/>
+
+After all inputs are entered, the calculation will run. Once complete, the results will written to the terminal. Both the determined component values and their percent errors will be displayed.
+```ansi
+┌───────────────────────────────────────┐
+│            R E S U L T S :            │
+└───────────────────────────────────────┘
+R1: 4.7 k               Error: 0.259%
+R2: 9.1 k               Error: 0.000%
+```
+<br/>
+
+From here, the results can be saved by a text file by typing `S`, or the application can be re-run by typing `R`. The script can be terminated by pressing `[ENTER]` without any input.
+
+#### LC Oscillator Example
+The goal is to create an LC tank circuit resonant at 1.5 kHz, using an E-24 inductor and an E-12 capacitor. It is easier to find inductors in hundreds of microhenries, and ceramic capacitors can be cheaply accurate down to nanofarads.
+
+##### LC Oscillator frequency equation:
+```math
+f= \frac{1}{2\pi \sqrt{LC}}
+```
+```ansi
+E-SERIES COMPONENT SOLVER
+Determine E-series values for components based on mathematical relationships.
+Enter 'EXIT' at any time to exit.
+
+Please enter names of components, one at a time:
+(Press [ENTER] without input when all components have been entered.
+At least one component must be entered before continuing.)
+Component:  L1
+Component:  C1
+
+
+Please enter mathematical relationships for components, one at a time:
+(Press [ENTER] without input when all relationships have been entered.
+At least one relationship must be entered before continuing.)
+Relationship: 1.5*k = 1 / (2 * pi * sqrt(L1 * C1))
+
+
+Please enter the E-series for each component value:
+(Valid E-series are: 3, 6, 12, 24, 48, 96, 192)
+E-Series for L1: 24
+E-Series for C1: 12
+
+
+Please enter the preferred decade for each component:
+(Must be entered as a power of 10, and engineering notation can be used.
+NOTE: Not all components will fall within preferred decade.)
+Decade for L1: 100u
+Decade for C1: 10n
+
+
+
+Computed in 0.366 seconds.
+
+┌───────────────────────────────────────┐
+│            R E S U L T S :            │
+└───────────────────────────────────────┘
+L1: 750 μ               Error: 0.000%
+C1: 15 μ                Error: 0.070%
+
+
+
+[Enter [S] to save to textfile or [R] to re-run with new values, otherwise press [ENTER] to quit.]
+
+```
+The application selected a 750 µH inductor, and a 15 µF capacitor. Both components have an error less than the maximum tolerance of their selected E-Series.<br/>
+<br/>
+Plugging these values into the LC resonant frequency equation yields:
+```math
+\frac{1}{2\pi \sqrt{(750 \mu H) \cdot (15 \mu F)}} \approx 1.50053 kHz
+```
+This yields an approximately 0.035% error from the desired frequency.
