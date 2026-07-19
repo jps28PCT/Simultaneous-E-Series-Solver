@@ -199,8 +199,24 @@ Now, the custom script has access to all functions. For full function descriptio
 - `e_series_selection_check()` - Quick input validation for E-Series selection
 - `decade_check()` - Quick input validation for component decade
 
+<br/>
+
 ### Using the Solver Engine
 The E-Series solver engine is callable as the function `e_val_select()`. 
 ```python
-e_val_select(components: str, relationships: list, e_series_selection: list, decade: list) -> dict
+e_val_select(components, relationships, e_series_selection, decade)
 ```
+#### Arguments:
+`components` is a string containing all [component names](#component-names), seperated by spaces.
+##### Example:
+`"R1 R2"`
+
+<br/>
+
+`relationships` is a list of [component relationship equations](#component-relationship-equations). The equations are expressed as strings.
+##### Example:
+`[ "3.3 = 5 * R2/(R1*R2)", "(R1+R2) / 5 = 10*m"]`
+
+<br/>
+
+`e_series_selection` is a list of [E-Series numbers](#component-e-series), where the E-Series numbers are integers. 
