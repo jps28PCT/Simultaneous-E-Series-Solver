@@ -8,7 +8,7 @@ The program solves systems of component-relationship equations for real-world [E
 > If run without SymPy installed, a warning will be printed and the program will end.<br/>
 <br/>
 
-The file `e_vals.py` can be run either as a script, or used as an API.<br/>
+The file `e_vals.py` can be run either as a [script](#running-as-a-script), or used as an [API](#using-as-an-api).<br/>
 
 The solver reqires component names, component relationships, component E-Series, and desired component decades in order to solve for the best real-world component values. 
 
@@ -27,7 +27,7 @@ When finished entering component relationships, press `[ENTER]` on the empty inp
 `3.3 = 5 * (R1/(R1+R2))`<br/>
 `1*k = 1 / (2 * pi * sqrt(L1 * C1))`<br/>
 
-#### Valid Operators
+#### Valid Operators:
 | Operator | Use |   | Operator | Use |
 | :---: | :---: | :---: | :---: | :---: |
 | `+` | addition |   | `**`| exponentiation |
@@ -35,7 +35,9 @@ When finished entering component relationships, press `[ENTER]` on the empty inp
 | `*` | multiplication |   | `X**(1/n)` | n-th root |
 | `/` | division |   | `log(X, n)` | log, base n|
 
-#### Pre-Defined Constants
+Other SymPy functions, like `sin( )` and `cos( )`, are also usable.
+
+#### Pre-Defined Constants:
 | Constant | Symbol | Value |
 | :---: | :---: | :--- |
 | π | `pi` | 3.14159265358979323846264338327950 |
@@ -102,6 +104,7 @@ Decade for R2: 1k
 ```
 <br/>
 
+### Outputs
 After all inputs are entered, the calculation will run. Once complete, the results will written to the terminal. Both the determined component values and their percent errors will be displayed.
 ```ansi
 ┌───────────────────────────────────────┐
@@ -172,4 +175,25 @@ Plugging these values into the LC resonant frequency equation yields:
 ```math
 \frac{1}{2\pi \sqrt{(750 \mu H) \cdot (15 \mu F)}} \approx 1.50053 kHz
 ```
-This yields an approximately 0.035% error from the desired frequency.
+This yields an approximately 0.035% error from the desired frequency.<br/>
+<br/>
+
+## Using as an API
+Custom scripts can be developed to automate workflows using this component value solver engine.<br/>
+<br/>
+To use, import as a library at the top of the file. For simplicity, the file can be imported as the name `ev`.
+```python
+import e_vals as ev
+```
+Now, the custom script has access to all functions. For full function descriptions, view the docustrings within [e_vals.py](e_vals.py).
+
+#### Functions:
+- `e_val_select()` -  Main solver engine
+- `print_e_val_results()` - ANSI terminal printer for values returned from solver engine
+- `eng_note()` - Converts floats to strings in SI engineering notation
+- `eng_to_float()` - Converts strings in SI engineering notation to floats
+- `save_to_textfile()` - Writes values returned from solver engine to a text file
+- `component_check()` - Quick input validation for component names
+- `relationship_check()` - Quick input validation for component relationship equations
+- `e_series_selection_check()` - Quick input validation for E-Series selection
+- `decade_check()` - Quick input validation for component decade
