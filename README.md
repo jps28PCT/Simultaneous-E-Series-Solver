@@ -204,6 +204,7 @@ Now, the custom script has access to all functions. For full function descriptio
 
 ### Using the Solver Engine
 The E-Series solver engine is callable as the function `e_val_select()`. 
+
 ```python
 e_val_select(components, relationships, e_series_selection, decade_selection)
 ```
@@ -212,36 +213,19 @@ e_val_select(components, relationships, e_series_selection, decade_selection)
 
 #### Arguments:
 
-`components` is a string containing all [component names](#component-names), seperated by spaces.
-##### Example: `"R1 R2"`
+- `components` (str) - All [component names](#component-names), separated by spaces.
 
-<br/>
+- `relationships` (list) - List of [component relationship equations](#component-relationship-equations), where equations are expressed as strings.
 
-`relationships` is a list of [component relationship equations](#component-relationship-equations). The equations are expressed as strings.
-##### Example: `[ "3.3 = 5 * R2/(R1+R2)",  "5 / (R1+R2) = 10*m"]`
+- `e_series_selection` (tuple) - [E-Series numbers](#component-e-series) associated with each component, in the same order as `components`
 
-<br/>
-
-`e_series_selection` is a tuple of [E-Series numbers](#component-e-series), where the E-Series numbers are integers. The numbers must be in the same order as in `components`. The first number corresponds with the first component name, the second number with the second component name, etc.
-
-##### Example: `( 24, 24 )`
-
-<br/>
-
-`decade_selection` is a tuple of desired [component decades](#decades). They can either be floats or strings, depending on if expressed as a decimal or an integer. Decades must be in the same order as `components`.<br/>
-##### Example: `( 100, '1k' )`
-
+- `decade_selection` (tuple) - Desired [component decades](#decades) associated with each component, expressed as floats or strings. Must be in the same order as `components`.
 <br/>
 
 #### Returns:
 Dictionary with component names as keys, and tuples containing (`E_VALUE`, `ERROR`) as values.
 - `E_VALUE` is the calculated E-Series value for the component, as a decimal float.
 - `ERROR` is the raw decimal percent error between the calculated E-Series value and the ideal value, as a decimal float.
-
-##### Example: `{'R1': (160.0, 0.058823529411764705), 'R2': (330.0, 0.0)}`
-- R<sub>1</sub> = 160 Ω, with 5.882% error<br/>
-- R<sub>2</sub> = 330 Ω, with 0% error
-
 <br/>
 
 #### Raises:
@@ -249,5 +233,27 @@ Dictionary with component names as keys, and tuples containing (`E_VALUE`, `ERRO
 This indicates the relationship equations are unsolvable for real-world component values.
 
 <br/>
+
+#### Engine Calling Example
+```python
+import e_vals as ev
+
+# Create voltage divider from 5V to 3.3V
+# with total current draw of 10mA
+
+components = "R1 R2"
+relationships = [ "3.3 = 5 * R2/(R1+R2)",  "5 / (R1+R2) = 10*m"]       
+e_series_selection = (24, 24)
+decade_selection = (100, '1k')
+
+ev.e_val_select(components, relationships, e_series_selection, decade_selection)
+```
+#### Output:
+```python
+{'R1': (160.0, 0.058823529411764705), 'R2': (330.0, 0.0)}
+
+# R1 = 160 Ω, with 5.882% error
+# R2 = 330 Ω, with 0% error
+```
 
 ### Custom Script Example
