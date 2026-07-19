@@ -728,7 +728,13 @@ def decade_check(decade: float, out: str="exception") -> str:
         If an invalid string is entered for "out", then the str "NONE SELECTED" will return.
     """
     errorStr = ""
-    if not log10(decade).is_integer():
+    decade = eng_to_float(decade)
+
+    if decade == 0:
+        errorStr = "Decade cannot be zero."
+    elif decade < 0:
+        errorStr = "Decade cannot be negative."
+    elif not log10(decade).is_integer():
         errorStr = "Value must be a decade expressed a power of 10."
     
     match out.lower():
