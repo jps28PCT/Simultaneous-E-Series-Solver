@@ -636,7 +636,7 @@ def component_check(component: str, out: str="exception") -> str:
         errorStr = "First character is not a letter."
     elif not component.isidentifier():
         errorStr = "Contains characters other than letters, numbers, or underscore."
-    elif component in ['pi','e','sqrt_2','sqrt_3','Y', 'Z', 'E', 'P', 'T', 
+    elif component in ['pi','e', 'phi', 'sqrt_2','sqrt_3','Y', 'Z', 'E', 'P', 'T', 
                        'G', 'M', 'k', 'm', 'u', 'n', 'p', 'f', 'a', 'z', 'y' ]:
         errorStr = "Component name cannot be reserved keyword."
     
