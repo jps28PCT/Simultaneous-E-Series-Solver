@@ -126,9 +126,9 @@ def e_val_select(components: str, relationships: list, e_series_selection: tuple
     if len(symList) == 0:
         raise Exception("No Components were passed. Unable to continue.")
     elif len(symList) == 1:
-        syms = (sp.symbols(components), )   #Formatting as tuple with one element
+        syms = (sp.symbols(components, positive=True, real=True), )   #Formatting as tuple with one element
     else:
-        syms = sp.symbols(components)
+        syms = sp.symbols(components, positive=True, real=True)
     
     constants = {
         ###CONSTANTS
@@ -158,18 +158,23 @@ def e_val_select(components: str, relationships: list, e_series_selection: tuple
         sp.Symbol('a'):        1e-18,
         sp.Symbol('z'):        1e-21,
         sp.Symbol('y'):        1e-24}
+    local_dict = {s.name: s for s in syms} | {c.name: c for c in constants.keys()} # 
     
     equation_list = []
     for relationship in relationships:
         left, right = relationship.split('=')
         
-        relat_ex = sp.parse_expr(right).subs(constants)
-        relat_eq = sp.parse_expr(left).subs(constants)
+        relat_ex = sp.parse_expr(right, local_dict=local_dict).subs(constants)
+        relat_eq = sp.parse_expr(left, local_dict=local_dict).subs(constants)
         equation = sp.Eq(relat_ex, relat_eq)
         
         equation_list.append(equation)
     
     value_dict = sp.solve(equation_list, syms, dict=True, rational=True, manual=True)
+    if not value_dict:
+        value_dict = sp.solve(equation_list, syms, dict=True, rational=True, manual=False)
+        if not value_dict:
+            raise ValueError("The system of component relationship equations cannot be solved.")
 
     values = {}
     errors = {}
@@ -565,7 +570,7 @@ def save_to_textfile(valueDict, seriesDict: dict=None, relationships: list=None,
     
     file.write("\nR E S U L T S :\n\n")
     for component in valueDict:
-        if component in seriesDict:
+        if seriesDict and component in seriesDict:
             if seriesDict[component] in [3, 6, 12, 24]:
                 sigfigs = 2
             else:
