@@ -313,7 +313,8 @@ qual = f"{Q} = ({tau}) / (R1*C1 + R2*C1 + (1-({K}))*R1*C2)"
 
 relationships = [freq, gain, qual]
 
-results = ev.e_val_select(components, relationships, e_series_selection, decade_selection) # Solver engine
+# Solver engine
+results = ev.e_val_select(components, relationships, e_series_selection, decade_selection) 
 
 ev.print_e_val_results(results) # Prints results to terminal
 
