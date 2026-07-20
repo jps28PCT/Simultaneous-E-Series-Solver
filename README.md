@@ -10,7 +10,7 @@ The program solves systems of component-relationship equations for real-world [E
 
 The file `e_vals.py` can be run either as a [script](#running-as-a-script), or used as an [API](#using-as-an-api).<br/>
 
-The solver reqires component names, component relationships, component E-Series, and desired component decades in order to solve for the best real-world component values. Any number of component names and relationshp equations can be passed, so the solver engine can analyze complex systems.
+The solver requires component names, component relationships, component E-Series, and desired component decades in order to solve for the best real-world component values. Any number of component names and relationshp equations can be passed, so the solver engine can analyze complex systems.
 
 
 ### Component Names
@@ -302,7 +302,7 @@ decade_selection =   ('1k', '1k', '10k', '10k', '1u', '1u')
 tau = "sqrt(R1*R2*C1*C2)"   # Expression to simplify equations
 K = "1 + (Rf/Rg)"           # Non-inverting gain
 
-# Cuttoff frequency equation
+# cutoff frequency equation
 freq = f"{ev.eng_to_float(fc)} = 1 / (2 * pi * ({tau}))"   
 
 # Voltage gain equation
