@@ -10,7 +10,7 @@ The program solves systems of component-relationship equations for real-world [E
 
 The file `e_vals.py` can be run either as a [script](#running-as-a-script), or used as an [API](#using-as-an-api).<br/>
 
-The solver reqires component names, component relationships, component E-Series, and desired component decades in order to solve for the best real-world component values. Any number of component names and relationshp equations can be passed, so complex systems can be analyzed by the engine.
+The solver reqires component names, component relationships, component E-Series, and desired component decades in order to solve for the best real-world component values. Any number of component names and relationshp equations can be passed, so the solver engine can analyze complex systems.
 
 
 ### Component Names
@@ -48,7 +48,7 @@ Other SymPy functions, like `sin( )` and `cos( )`, are also usable.
 
 
 ### Component E-Series
-Each component must be associated with an E-Series. Higher E-Series have smaller steps between values, and thus have more values per decade. Each series also has sequentially smaller maximum tolerance.
+Each component must be associated with an E-Series. Higher E-Series have smaller steps between values, and thus have more values per decade. Each series also has sequentially smaller maximum tolerance. These values must be integers.
 
 #### E-Series Numbers:
 `3`, `6`, `12`, `24`, `48`, `96`, `192`
@@ -181,9 +181,10 @@ This yields an approximately 0.035% error from the desired frequency.<br/>
 <br/>
 
 ## Using as an API
-Custom scripts can be developed to automate workflows using this component value solver engine.<br/>
+Custom scripts can be developed to automate workflows using the component value solver engine.<br/>
 <br/>
 To use, import as a library at the top of the file. The file can be imported as the name `ev` for simplicity.
+
 ```python
 import e_vals as ev
 ```
@@ -209,7 +210,6 @@ The E-Series solver engine is callable as the function `e_val_select()`.
 e_val_select(components, relationships, e_series_selection, decade_selection)
 ```
 
-<br/>
 
 #### Arguments:
 
@@ -234,7 +234,7 @@ This indicates the relationship equations are unsolvable for real-world componen
 
 <br/>
 
-#### Engine Calling Example
+#### Example of Using the Solver Engine
 ```python
 import e_vals as ev
 
@@ -246,14 +246,119 @@ relationships = [ "3.3 = 5 * R2/(R1+R2)",  "5 / (R1+R2) = 10*m"]
 e_series_selection = (24, 24)
 decade_selection = (100, '1k')
 
-ev.e_val_select(components, relationships, e_series_selection, decade_selection)
+results = ev.e_val_select(components, relationships, e_series_selection, decade_selection)
+print(results)
 ```
+
 #### Output:
-```python
+```bash
 {'R1': (160.0, 0.058823529411764705), 'R2': (330.0, 0.0)}
+```
+> R1 = 160 Ω, with 5.882% error<br/>
+> R2 = 330 Ω, with 0% error
 
-# R1 = 160 Ω, with 5.882% error
-# R2 = 330 Ω, with 0% error
+<br/>
+
+### Custom Scripts
+When running through multiple iterations of similar topologies, repeatedly entering component names and equations may become tedious. Writing a script allows more control over the environment, and thus a custom workflow can be developed.
+
+Further equation formatting can become more intuitive by using f-strings. Lengthy or repeated expressions can be assigned to a variable, and an f-string can substitute the variable into equation strings.
+
+<br/>
+
+#### Sallen-Key Low-Pass Filter Example
+Sallen-Key filters are well-studied topologies, and have [defined equations](https://www.ti.com/lit/an/sloa024b/sloa024b.pdf). Here, the filters will also have a negative-feedback, non-inverting gain stage.
+
+##### Cutoff frequency:
+```math
+f_{c} = \frac{1}{2\pi\sqrt{R_1R_2C_1C_2}}
 ```
 
-### Custom Script Example
+##### Voltage gain:
+```math
+A_v = 1 +\frac{R_f}{R_g}
+```
+
+##### Quality factor:
+```math
+Q = \frac{\sqrt{R_1R_2C_1C_2}}{R_1C_1 + R_2C_1 + R_1C_2(1-A_v)}
+```
+<br/>
+
+```python
+import e_vals as ev
+
+### INPUT VALUES
+fc = '20k'          # Cutoff frequency
+Q = '1/sqrt_2'      # Filter response (Butterworth)
+Av = 2              # Filter gain
+
+### Components
+components =        "R1 R2 Rf Rg C1 C2"
+e_series_selection = (24, 24, 24, 24, 12, 12)
+decade_selection =   ('1k', '1k', '10k', '10k', '1u', '1u')
+
+### Equations
+tau = "sqrt(R1*R2*C1*C2)"   # Expression to simplify equations
+K = "1 + (Rf/Rg)"           # Non-inverting gain
+
+# Cuttoff frequency equation
+freq = f"{ev.eng_to_float(fc)} = 1 / (2 * pi * ({tau}))"   
+
+# Voltage gain equation
+gain = f"{Av} = {K}"            
+
+# Q equation
+qual = f"{Q} = ({tau}) / (R1*C1 + R2*C1 + (1-({K}))*R1*C2)"
+
+relationships = [freq, gain, qual]
+
+results = ev.e_val_select(components, relationships, e_series_selection, decade_selection)
+
+ev.print_e_val_results(results) # Prints results to terminal
+
+headerStr = (f"fc = {fc}\n"
+             f"Q = {Q}  \n"
+             f"Av = {Av}")
+
+ev.save_to_textfile(results, header=headerStr) # Save to text file
+
+```
+##### Output:
+```ansi
+┌───────────────────────────────────────┐
+│            R E S U L T S :            │
+└───────────────────────────────────────┘
+R1: 1.80 k              Error: 0.000%
+R2: 1.10 k              Error: 0.000%
+Rf: 10.0 k              Error: 0.000%
+Rg: 10.0 k              Error: 0.000%
+C1: 6.80 n              Error: 0.000%
+C2: 4.70 n              Error: 0.071%
+```
+
+##### Saved text file:
+```
+┌───────────────────────────────────────────────────┐
+│ E - S E R I E S   C O M P O N E N T   V A L U E S │
+└───────────────────────────────────────────────────┘
+
+
+fc = 20k
+Q = 1/sqrt_2  
+Av = 2
+
+
+R E S U L T S :
+
+R1: 1.80 k		Error: 0.000%
+R2: 1.10 k		Error: 0.000%
+Rf: 10.0 k		Error: 0.000%
+Rg: 10.0 k		Error: 0.000%
+C1: 6.80 n		Error: 0.000%
+C2: 4.70 n		Error: 0.071%
+
+__________________________________________________
+
+Calculated on Sun Jul 19 21:53:01 2026
+```
