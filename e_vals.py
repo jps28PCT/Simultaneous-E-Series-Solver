@@ -13,18 +13,23 @@ The results will be written to the screen.
 
 import sys
 from time import time, ctime
+from math import log10
 
 try:
     import sympy as sp
 except ModuleNotFoundError:
-    print("\033[1;31;40mSymPy must be installed to run.\nPlease run \033[0mpip install sympy\033[1;31;40m in the terminal.\033[0m")
+    print("\033[1;31;40mSymPy must be installed to run.\nPlease run \
+          \033[0mpip install sympy\033[1;31;40m in the terminal.\033[0m")
     print("\033[1;31;40mPress \033[0m[ENTER]\033[1;31;40m to exit.\033[0m")
     input()
     sys.exit(1)
 
+
+#################################   CALLABLE FUNCTIONS   #################################
+
     
 
-def e_val_select(components: str, relationships: list, e_series_selection: list, decade: list) -> dict:
+def e_val_select(components: str, relationships: list, e_series_selection: tuple, decade_selection: tuple) -> dict:
     """
     Finds E-series of preferred numbers values for components based on mathematical relationships.
     This function will identify the values that minimize error between the real values and the E-series values.
@@ -35,17 +40,21 @@ def e_val_select(components: str, relationships: list, e_series_selection: list,
                                     Example: "R1 R2 C1 L1"
         relationships (list):       List of strings representing mathematical relationships of the components.
                                     Example: ["R2 / R1 = 2", "1 / (C1 * L1) = 500", "(R1 + R2) / (C1 + L1) = 2"]
-        e_series_selection (list):  List of E-series to use for each component, in the same order as "components".
+        e_series_selection (tuple): List of E-series to use for each component, in the same order as "components".
                                     Must be 3, 6, 12, 24, 48, 96, or 192.
-                                    Example: [24, 24, 12, 6]  (for R1 to be in E24, R2 to be in E24, C1 to be in E12, and L1 to be in E6.)
-        decade (list):              List of preferrred decade value for each component's E-series values, in the same order as "components".
+                                    Example: (24, 24, 12, 6)
+                                            For R1 to be in E24, R2 in E24, C1 in E12, and L1 in E6.
+        decade_selection (tuple):   List of preferrred decade value for each component's E-series values, in the same 
+                                    order as "components".
                                     Since it cannot be predicted what component SymPy will initially solve for,
-                                    all of the components may not be within their preferred decade.
+                                    not all components may be within their preferred decade.
                                     This value can either be a float or a string in engineering notation.
-                                    Examples: 1, 10, 10000, 0.0001, '10k', '100u'.
+                                    Example: (1000, '10k', 0.000001, '100u')
+                                             For R1 to be within 1k, R2 within 10k, C1 within 1µ, and L1 within 200µ.
     
     Returns:
         Dictionary, with component names as keys, and tuple containing (VALUE, ERROR) as values.
+        'VALUE' is the calculated E-Series value, and 'ERROR' is the percent error between the E-Series value and the ideal.
     """
     e_series_array = []
     for item in e_series_selection:
@@ -55,39 +64,117 @@ def e_val_select(components: str, relationships: list, e_series_selection: list,
             case 6:
                 e_vals = [1.0, 1.5, 2.2, 3.3, 4.7, 6.8]
             case 12:
-                e_vals = [1.0, 1.2, 1.5, 1.8, 2.2, 2.7, 3.3, 3.9, 4.7, 5.6, 6.8, 8.2]
+                e_vals = [1.0, 1.2, 1.5, 1.8, 2.2, 2.7, 
+                          3.3, 3.9, 4.7, 5.6, 6.8, 8.2]
             case 24:
-                e_vals = [1.0, 1.1, 1.2, 1.3, 1.5, 1.6, 1.8, 2.0, 2.2, 2.4, 2.7, 3.0, 3.3, 3.6, 3.9, 4.3, 4.7, 5.1, 5.6, 6.2, 6.8, 7.5, 8.2, 9.1]
+                e_vals = [1.0, 1.1, 1.2, 1.3, 1.5, 1.6, 
+                          1.8, 2.0, 2.2, 2.4, 2.7, 3.0, 
+                          3.3, 3.6, 3.9, 4.3, 4.7, 5.1, 
+                          5.6, 6.2, 6.8, 7.5, 8.2, 9.1]
             case 48:
-                e_vals = [1.00, 1.05, 1.10, 1.15, 1.21, 1.27, 1.33, 1.40, 1.47, 1.54, 1.62, 1.69, 1.78, 1.87, 1.96, 2.05, 2.15, 2.26, 2.37, 2.49, 2.61, 2.74, 2.87, 3.01, 3.16, 3.32, 3.48, 3.65, 3.83, 4.02, 4.22, 4.42, 4.64, 4.87, 5.11, 5.36, 5.62, 5.90, 6.19, 6.49, 6.81, 7.15, 7.50, 7.87, 8.25, 8.66, 9.09, 9.53]
+                e_vals = [1.00, 1.05, 1.10, 1.15, 1.21, 1.27, 1.33, 1.40, 
+                          1.47, 1.54, 1.62, 1.69, 1.78, 1.87, 1.96, 2.05, 
+                          2.15, 2.26, 2.37, 2.49, 2.61, 2.74, 2.87, 3.01, 
+                          3.16, 3.32, 3.48, 3.65, 3.83, 4.02, 4.22, 4.42, 
+                          4.64, 4.87, 5.11, 5.36, 5.62, 5.90, 6.19, 6.49, 
+                          6.81, 7.15, 7.50, 7.87, 8.25, 8.66, 9.09, 9.53]
             case 96:
-                e_vals = [1.00, 1.02, 1.05, 1.07, 1.10, 1.13, 1.15, 1.18, 1.21, 1.24, 1.27, 1.30, 1.33, 1.37, 1.40, 1.43, 1.47, 1.50, 1.54, 1.58, 1.62, 1.65, 1.69, 1.74, 1.78, 1.82, 1.87, 1.91, 1.96, 2.00, 2.05, 2.10, 2.15, 2.21, 2.26, 2.32, 2.37, 2.43, 2.49, 2.55, 2.61, 2.67, 2.74, 2.80, 2.87, 2.94, 3.01, 3.09, 3.16, 3.24, 3.32, 3.40, 3.48, 3.57, 3.65, 3.74, 3.83, 3.92, 4.02, 4.12, 4.22, 4.32, 4.42, 4.53, 4.64, 4.75, 4.87, 4.99, 5.11, 5.23, 5.36, 5.49, 5.62, 5.76, 5.90, 6.04, 6.19, 6.34, 6.49, 6.65, 6.81, 6.98, 7.15, 7.32, 7.50, 7.68, 7.87, 8.06, 8.25, 8.45, 8.66, 8.87, 9.09, 9.31, 9.53, 9.76]
+                e_vals = [1.00, 1.02, 1.05, 1.07, 1.10, 1.13, 1.15, 1.18, 
+                          1.21, 1.24, 1.27, 1.30, 1.33, 1.37, 1.40, 1.43, 
+                          1.47, 1.50, 1.54, 1.58, 1.62, 1.65, 1.69, 1.74, 
+                          1.78, 1.82, 1.87, 1.91, 1.96, 2.00, 2.05, 2.10, 
+                          2.15, 2.21, 2.26, 2.32, 2.37, 2.43, 2.49, 2.55, 
+                          2.61, 2.67, 2.74, 2.80, 2.87, 2.94, 3.01, 3.09, 
+                          3.16, 3.24, 3.32, 3.40, 3.48, 3.57, 3.65, 3.74, 
+                          3.83, 3.92, 4.02, 4.12, 4.22, 4.32, 4.42, 4.53, 
+                          4.64, 4.75, 4.87, 4.99, 5.11, 5.23, 5.36, 5.49, 
+                          5.62, 5.76, 5.90, 6.04, 6.19, 6.34, 6.49, 6.65, 
+                          6.81, 6.98, 7.15, 7.32, 7.50, 7.68, 7.87, 8.06, 
+                          8.25, 8.45, 8.66, 8.87, 9.09, 9.31, 9.53, 9.76]
             case 192:
-                e_vals = [1.00, 1.01, 1.02, 1.04, 1.05, 1.06, 1.07, 1.09, 1.10, 1.11, 1.13, 1.14, 1.15, 1.17, 1.18, 1.20, 1.21, 1.23, 1.24, 1.26, 1.27, 1.29, 1.30, 1.32, 1.33, 1.35, 1.37, 1.38, 1.40, 1.42, 1.43, 1.45, 1.47, 1.49, 1.50, 1.52, 1.54, 1.56, 1.58, 1.60, 1.62, 1.64, 1.65, 1.67, 1.69, 1.72, 1.74, 1.76, 1.78, 1.80, 1.82, 1.84, 1.87, 1.89, 1.91, 1.93, 1.96, 1.98, 2.00, 2.03, 2.05, 2.08, 2.10, 2.13, 2.15, 2.18, 2.21, 2.23, 2.26, 2.29, 2.32, 2.34, 2.37, 2.40, 2.43, 2.46, 2.49, 2.52, 2.55, 2.58, 2.61, 2.64, 2.67, 2.71, 2.74, 2.77, 2.80, 2.84, 2.87, 2.91, 2.94, 2.98, 3.01, 3.05, 3.09, 3.12, 3.16, 3.20, 3.24, 3.28, 3.32, 3.36, 3.40, 3.44, 3.48, 3.52, 3.57, 3.61, 3.65, 3.70, 3.74, 3.79, 3.83, 3.88, 3.92, 3.97, 4.02, 4.07, 4.12, 4.17, 4.22, 4.27, 4.32, 4.37, 4.42, 4.48, 4.53, 4.59, 4.64, 4.70, 4.75, 4.81, 4.87, 4.93, 4.99, 5.05, 5.11, 5.17, 5.23, 5.30, 5.36, 5.42, 5.49, 5.56, 5.62, 5.69, 5.76, 5.83, 5.90, 5.97, 6.04, 6.12, 6.19, 6.26, 6.34, 6.42, 6.49, 6.57, 6.65, 6.73, 6.81, 6.90, 6.98, 7.06, 7.15, 7.23, 7.32, 7.41, 7.50, 7.59, 7.68, 7.77, 7.87, 7.96, 8.06, 8.16, 8.25, 8.35, 8.45, 8.56, 8.66, 8.76, 8.87, 8.98, 9.09, 9.20, 9.31, 9.42, 9.53, 9.65, 9.76, 9.88]
+                e_vals = [1.00, 1.01, 1.02, 1.04, 1.05, 1.06, 1.07, 1.09, 
+                          1.10, 1.11, 1.13, 1.14, 1.15, 1.17, 1.18, 1.20, 
+                          1.21, 1.23, 1.24, 1.26, 1.27, 1.29, 1.30, 1.32, 
+                          1.33, 1.35, 1.37, 1.38, 1.40, 1.42, 1.43, 1.45, 
+                          1.47, 1.49, 1.50, 1.52, 1.54, 1.56, 1.58, 1.60, 
+                          1.62, 1.64, 1.65, 1.67, 1.69, 1.72, 1.74, 1.76, 
+                          1.78, 1.80, 1.82, 1.84, 1.87, 1.89, 1.91, 1.93, 
+                          1.96, 1.98, 2.00, 2.03, 2.05, 2.08, 2.10, 2.13, 
+                          2.15, 2.18, 2.21, 2.23, 2.26, 2.29, 2.32, 2.34, 
+                          2.37, 2.40, 2.43, 2.46, 2.49, 2.52, 2.55, 2.58, 
+                          2.61, 2.64, 2.67, 2.71, 2.74, 2.77, 2.80, 2.84, 
+                          2.87, 2.91, 2.94, 2.98, 3.01, 3.05, 3.09, 3.12, 
+                          3.16, 3.20, 3.24, 3.28, 3.32, 3.36, 3.40, 3.44, 
+                          3.48, 3.52, 3.57, 3.61, 3.65, 3.70, 3.74, 3.79, 
+                          3.83, 3.88, 3.92, 3.97, 4.02, 4.07, 4.12, 4.17, 
+                          4.22, 4.27, 4.32, 4.37, 4.42, 4.48, 4.53, 4.59, 
+                          4.64, 4.70, 4.75, 4.81, 4.87, 4.93, 4.99, 5.05, 
+                          5.11, 5.17, 5.23, 5.30, 5.36, 5.42, 5.49, 5.56, 
+                          5.62, 5.69, 5.76, 5.83, 5.90, 5.97, 6.04, 6.12, 
+                          6.19, 6.26, 6.34, 6.42, 6.49, 6.57, 6.65, 6.73, 
+                          6.81, 6.90, 6.98, 7.06, 7.15, 7.23, 7.32, 7.41, 
+                          7.50, 7.59, 7.68, 7.77, 7.87, 7.96, 8.06, 8.16, 
+                          8.25, 8.35, 8.45, 8.56, 8.66, 8.76, 8.87, 8.98, 
+                          9.09, 9.20, 9.31, 9.42, 9.53, 9.65, 9.76, 9.88]
+                
         e_series_array.append(e_vals)
     
-    for value in decade:
-        decade[decade.index(value)] = eng_to_float(str(value))
+    decade = []
+    for value in decade_selection:
+        decade.append(eng_to_float(str(value)))
     symList = components.split(' ')
     if len(symList) == 0:
         raise Exception("No Components were passed. Unable to continue.")
     elif len(symList) == 1:
-        syms = (sp.symbols(components), )
+        syms = (sp.symbols(components, positive=True, real=True), )   #Formatting as tuple with one element
     else:
-        syms = sp.symbols(components)
+        syms = sp.symbols(components, positive=True, real=True)
     
+    constants = {
+        ###CONSTANTS
+        sp.Symbol('pi'):        3.14159265358979323846264338327950,
+        sp.Symbol('e'):         2.71828182845904523536028747135266,
+        sp.Symbol('phi'):       1.61803398874989484820458683436563,
+        sp.Symbol('sqrt_2', 
+        pretty_name='\u221A2'): 1.41421356237309504880168872420969,
+        sp.Symbol('sqrt_3', 
+        pretty_name='\u221A3'): 1.73205080756887729352744634150587,
+        
+        ### ENGINEERING NOTATION
+        sp.Symbol('Y'):        1e24,
+        sp.Symbol('Z'):        1e21,
+        sp.Symbol('E'):        1e18,
+        sp.Symbol('P'):        1e15,
+        sp.Symbol('T'):        1e12,
+        sp.Symbol('G'):        1e9,
+        sp.Symbol('M'):        1e6,
+        sp.Symbol('k'):        1e3,
+        sp.Symbol('m'):        1e-3,
+        sp.Symbol('u',
+        pretty_name='\u03BC'): 1e-6,
+        sp.Symbol('n'):        1e-9,
+        sp.Symbol('p'):        1e-12,
+        sp.Symbol('f'):        1e-15,
+        sp.Symbol('a'):        1e-18,
+        sp.Symbol('z'):        1e-21,
+        sp.Symbol('y'):        1e-24}
+    local_dict = {s.name: s for s in syms} | {c.name: c for c in constants.keys()} # 
     
     equation_list = []
     for relationship in relationships:
         left, right = relationship.split('=')
         
-        relat_ex = sp.parse_expr(right)
-        relat_eq = sp.parse_expr(left)
+        relat_ex = sp.parse_expr(right, local_dict=local_dict).subs(constants)
+        relat_eq = sp.parse_expr(left, local_dict=local_dict).subs(constants)
         equation = sp.Eq(relat_ex, relat_eq)
         
         equation_list.append(equation)
     
     value_dict = sp.solve(equation_list, syms, dict=True, rational=True, manual=True)
+    if not value_dict:
+        value_dict = sp.solve(equation_list, syms, dict=True, rational=True, manual=False)
+        if not value_dict:
+            raise ValueError("The system of component relationship equations cannot be solved.")
 
     values = {}
     errors = {}
@@ -202,7 +289,7 @@ def e_val_select(components: str, relationships: list, e_series_selection: list,
 
 
 
-def print_e_val_results(valueDict, seriesDict=None) -> None:
+def print_e_val_results(valueDict: dict, seriesDict: dict=None) -> None:
     """
     Prints the results of e_val_select() to terminal for display.
 
@@ -216,32 +303,40 @@ def print_e_val_results(valueDict, seriesDict=None) -> None:
             After printing to the terminal, None.
     """
 
-    print("\033[1;36;40m┌───────────────────────────────────────┐\n│            R E S U L T S :            │\n└───────────────────────────────────────┘\033[0m")
+    print("\033[1;36;40m┌───────────────────────────────────────┐\033[0m\n"
+          "\033[1;36;40m│            R E S U L T S :            │\033[0m\n"
+          "\033[1;36;40m└───────────────────────────────────────┘\033[0m")
+
     for component in valueDict:
-        if component in seriesDict:
+        if seriesDict and component in seriesDict:
             if seriesDict[component] in [3, 6, 12, 24]:
                 sigfigs = 2
             else:
                 sigfigs = 3
         else:
             sigfigs = 3
-        print(f"\033[1;33;40m{component}:\033[0m {eng_note(valueDict[component][0], sigfigs)}\t\t\033[1;36;40mError:\033[0m {valueDict[component][1]*100:.3f}%")
+        print(f"\033[1;33;40m{component}:\033[0m {eng_note(valueDict[component][0], sigfigs, encoding=sys.getdefaultencoding())}"
+              f"\t\t\033[1;36;40mError:\033[0m {valueDict[component][1]*100:.3f}%")
 
     return None
     
         
 
-def eng_note(inputValue, numSigFigs=0) -> str:
+def eng_note(inputValue: float, numSigFigs: int=0, encoding: str="ASCII") -> str:
     """
     Formats a numeric value as a string in engineering notation.
     Works from -10^24 to 10^24, otherwise defaults to scientific notation.
     Using the same number of significant figures results in a consistent string length.
 
     Args:
-        inputValue: numeric value to be formatted.
-        numSigFigs: Number of significant figures. 
-                    Inputting zero results in maximum length.
-                    Defaults to zero.
+        inputValue (float): numeric value to be formatted.
+        numSigFigs (int):   Number of significant figures. 
+                            Inputting zero results in maximum length.
+                            Defaults to zero.
+        encoding (str):     Selects encoding style for "micro" designation.
+                            encoding="ASCII": "micro" is written as "u"
+                            encoding="UFT-8": "micro" is written as "µ"
+                            Default: "ASCII"
     Returns:
         String formatted in engineering notation.
     """
@@ -250,9 +345,15 @@ def eng_note(inputValue, numSigFigs=0) -> str:
     if newVal == 0:
         return f"{'0  ':>{numSigFigs+1}}"
     elif newVal == float('inf'):
-        return f"{'inf  ':>{numSigFigs+1}}"
+        if encoding.upper() == "UTF-8":
+            return f"\u221E{'  ':>{numSigFigs+1}}"
+        else:
+            return f"{'inf  ':>{numSigFigs+1}}"
     elif newVal == float('-inf'):
-        return f"{'-inf  ':>{numSigFigs+1}}"
+        if encoding.upper() == "UTF-8":
+            return f"-\u221E{'  ':>{numSigFigs+1}}"
+        else:   
+            return f"{'-inf  ':>{numSigFigs+1}}"
     
     while (abs(newVal) >= 1000) and exponent <= 24:
         exponent += 3
@@ -291,26 +392,27 @@ def eng_note(inputValue, numSigFigs=0) -> str:
             newVal = round(newVal)
             newVal = newVal * 10**temp_exp
 
+    tempSigFigs = numSigFigs
     if abs(newVal) < 10:
-        numsAfterDecimal = numSigFigs - 1
+        numsAfterDecimal = tempSigFigs - 1
     elif abs(newVal) < 100:
-        numsAfterDecimal = numSigFigs - 2
+        numsAfterDecimal = tempSigFigs - 2
     else:
-        numsAfterDecimal = numSigFigs - 3
+        numsAfterDecimal = tempSigFigs - 3
     if numsAfterDecimal < 0:
-        numSigFigs = 3
+        tempSigFigs = 3
         numsAfterDecimal = 0
             
     if numSigFigs == 0:
         returnVal = str(newVal)
     else:
-        returnVal = f"{newVal:>{numSigFigs}.{numsAfterDecimal}f}"
+        returnVal = f"{newVal:>{tempSigFigs}.{numsAfterDecimal}f}"
 
     if abs(exponent) > 24:
         if numSigFigs == 0:
             returnVal = f"{inputValue:e}"
         else:
-            returnVal = f"{inputValue:>.{numSigFigs-1}e}"
+            returnVal = f"{inputValue:>.{tempSigFigs-1}e}"
     
     match exponent:
         case 24:
@@ -332,7 +434,10 @@ def eng_note(inputValue, numSigFigs=0) -> str:
         case -3:
             returnVal += ' m'
         case -6:
-            returnVal += ' u'
+            if encoding.upper() == "UTF-8":
+                returnVal += " \u03BC"
+            else:
+                returnVal += ' u'
         case -9:
             returnVal += ' n'
         case -12:
@@ -379,10 +484,15 @@ def eng_to_float(inputStr: str) -> float:
     numStr = ""
     prefixStr = ""
     for char in inputStr:
-        if char.isdigit() or char == '.' or char == '-':
+        if char.isdigit() or char in['.', '-', '\u221E']:
             numStr += char
         if char.isalpha():
             prefixStr += char
+    
+    if numStr == "\u221E":
+        return float('inf')
+    elif numStr == "-\u221E":
+        return float('-inf')
     
     match prefixStr:
         case 'Y':
@@ -407,6 +517,8 @@ def eng_to_float(inputStr: str) -> float:
             exponent = -3
         case 'u':
             exponent = -6
+        case '\u03BC':
+            exponent = -6
         case 'n':
             exponent = -9
         case 'p':
@@ -420,32 +532,53 @@ def eng_to_float(inputStr: str) -> float:
         case 'y':
             exponent = -24
         case _:
-            raise ValueError(f"'{prefixStr}' is an invalid engineering notation prefix. Prefix must be between 10^-24 (y-) and 10^24 (Y-).")
+            raise ValueError(f"'{prefixStr}' is an invalid engineering notation prefix. "
+                             "Prefix must be between 10^-24 (y-) and 10^24 (Y-).")
         
     returnNum = float(numStr) * 10**exponent
     return returnNum
 
 
 
-def save_to_textfile(valueDict, seriesDict=None, relationships=None, footer=None) -> str:
+def save_to_textfile(valueDict, seriesDict: dict=None, relationships: list=None, header: str=None, footer: str=None) -> str:
+    """
+    Writes results of e_val_select() to a text file. Name of text file is generated based on UNIX timestamp.
+    Encoding will always be in UTF-8.
+
+    Args:
+        valueDict (dict):       Returned dictionary from e_val_select()
+        seriesDict (dict):      (Optional) Dictionary with component names as keys and selected E-Series as values
+        relationships (list):   (Optional) List of component relationships, as strings
+        header (str):           (Optional) Line of text to print at beginning of text file
+        footer (str):           (Optional) Line of text to print at end of text file
+    
+    Returns:
+        Name of text file, as str.
+    """
     timeInt = int(time())
     humanTime = ctime()
 
     fileName = f"e_series_values_{timeInt}.txt"
     file = open(fileName, 'w', encoding="utf-8")
 
-    file.write(f"┌───────────────────────────────────────────┐\n│ E - S E R I E S   C O M P O N E N T   V A L U E S │\n└───────────────────────────────────────────┘\n\n")
+    file.write("┌───────────────────────────────────────────────────┐\n"
+               "│ E - S E R I E S   C O M P O N E N T   V A L U E S │\n"
+               "└───────────────────────────────────────────────────┘\n\n")
 
+    if header:
+        file.write(f"\n{header}\n\n")
+    
     file.write("\nR E S U L T S :\n\n")
     for component in valueDict:
-        if component in seriesDict:
+        if seriesDict and component in seriesDict:
             if seriesDict[component] in [3, 6, 12, 24]:
                 sigfigs = 2
             else:
                 sigfigs = 3
         else:
             sigfigs = 3
-        file.write(f"{component}: {eng_note(valueDict[component][0], sigfigs)}\t\tError: {valueDict[component][1]*100:.3f}%\n")
+        file.write(f"{component}: {eng_note(valueDict[component][0], sigfigs, encoding='UTF-8')}\t\t"
+                   f"Error: {valueDict[component][1]*100:.3f}%\n")
 
     if seriesDict:
         file.write("\n\n__________________________________________________\n\n")
@@ -476,14 +609,177 @@ def save_to_textfile(valueDict, seriesDict=None, relationships=None, footer=None
 
 
 
+#################################   VALUE CHECKING   #################################
+"""
+These functions can be used to check the validity of an input value before it is formatted
+for input into e_val_select().
+
+The solving engine does not call these functions. They can be called to validate user input
+before calling e_val_select().
+"""
+
+class InvalidValueError(Exception):
+    """
+    Exception for use by component_check, relationship_check, e_series_selection_check, and decade_check.
+    This ensures that these cases can be handled seperately from other exceptions, to improve clarity.    
+    """
+
+def component_check(component: str, out: str="exception") -> str:
+    """
+    Checks if a component name follows form expected for SymPy.
+    A component name must start with a letter, and can only contain letters, numbers, and underscores.
+
+    Args:
+        component (str):    Component name to check
+        out (str):         Output out.
+                            out="exception": Raises InvalidValueError exception with descriptive error message.
+                            out="str":       Only returns string, and does not raise exceptions.
+                            Default: "exception"
+    
+    Returns:
+        If out="str", will return text with descriptive error message if the component name is invalid.
+        If the component name is valid, an empty string will be returned.
+        If an invalid string is entered for "out", then the str "NONE SELECTED" will return.
+    """
+    errorStr = ""
+    if not component[0].isalpha():
+        errorStr = "First character is not a letter."
+    elif not component.isidentifier():
+        errorStr = "Contains characters other than letters, numbers, or underscore."
+    elif component in ['pi','e', 'phi', 'sqrt_2','sqrt_3','Y', 'Z', 'E', 'P', 'T', 
+                       'G', 'M', 'k', 'm', 'u', 'n', 'p', 'f', 'a', 'z', 'y' ]:
+        errorStr = "Component name cannot be reserved keyword."
+    
+    match out.lower():
+        case "exception":
+            if errorStr:
+                raise InvalidValueError(errorStr)
+        case "str":
+            return errorStr
+        case _:
+            return "NONE SELECTED"
+
+def relationship_check(relationship: str, out: str="exception") -> str:
+    """
+    Checks if a relationship equation follows form expected by the e_val_select() engine.
+    It will not check for all possible SymPy syntax issues, but rather guards against common syntax mistakes.
+
+    Args:
+        relationship (str): Relationship equation to check
+        out (str):         Output out.
+                            out="exception": Raises InvalidValueError exception with descriptive error message.
+                            out="str":       Only returns string, and does not raise exceptions.
+                            Default: "exception"
+    
+    Returns:
+        If out="str", will return text with descriptive error message if the relationship is invalid.
+        If the component name is valid, an empty string will be returned.
+        If an invalid string is entered for "out", then the str "NONE SELECTED" will return.
+    """
+    errorStr = ""
+    if not '=' in relationship:
+        errorStr = "Relationship equation must contain an equals sign."
+    if '^' in relationship:
+        errorStr = "Caret cannot be used for exponentiation. Use two asterisks (A**B)."
+    
+    match out.lower():
+        case "exception":
+            if errorStr:
+                raise InvalidValueError(errorStr)
+        case "str":
+            return errorStr
+        case _:
+            return "NONE SELECTED"
+        
+
+def e_series_selection_check(e_series_selection: int, out: str="exception") -> str:
+    """
+    Checks if an integer is a valid E-Series number.
+
+    Args:
+        e_series_selection (int):   E-Series number to check
+        out (str):                 Output out.
+                                    out="exception": Raises InvalidValueError exception with descriptive error message.
+                                    out="str":       Only returns string, and does not raise exceptions.
+                                    Default: "exception"
+    
+    Returns:
+        If out="str", will return text with descriptive error message if the E-Series value is invalid.
+        If the component name is valid, an empty string will be returned.
+        If an invalid string is entered for "out", then the str "NONE SELECTED" will return.
+    """
+    errorStr = ""
+    if e_series_selection not in [3, 6, 12, 24, 48, 96, 192]:
+        errorStr = "Value must be a valid E-Series number."
+    
+    match out.lower():
+        case "exception":
+            if errorStr:
+                raise InvalidValueError(errorStr)
+        case "str":
+            return errorStr
+        case _:
+            return "NONE SELECTED"
+
+def decade_check(decade: float, out: str="exception") -> str:
+    """
+    Checks if a float is a valid power-of-ten decade.
+
+    Args:
+        decade (float): Value to check.
+        out (str):     Output out.
+                        out="exception": Raises InvalidValueError exception with descriptive error message.
+                        out="str":       Only returns string, and does not raise exceptions.
+                        Default: "exception"
+    
+    Returns:
+        If out="str", will return text with descriptive error message if the decade is invalid.
+        If the component name is valid, an empty string will be returned.
+        If an invalid string is entered for "out", then the str "NONE SELECTED" will return.
+    """
+    errorStr = ""
+    decade = eng_to_float(decade)
+
+    if decade == 0:
+        errorStr = "Decade cannot be zero."
+    elif decade < 0:
+        errorStr = "Decade cannot be negative."
+    elif not log10(decade).is_integer():
+        errorStr = "Value must be a decade expressed a power of 10."
+    
+    match out.lower():
+        case "exception":
+            if errorStr:
+                raise InvalidValueError(errorStr)
+        case "str":
+            return errorStr
+        case _:
+            return "NONE SELECTED"
+
+
+
+
+
+#################################   PROGRAM SCRIPT   #################################
+"""
+This part only runs if the program is run as a script.
+
+No part of this section is callable from another file.
+"""
 
 if __name__ == "__main__":
-    while True:
-        print("\033[2J\033[H\033[1m\033[1;32;40mE-SERIES COMPONENT SOLVER\nDetermine E-series values for components based on mathematical relationships.\nEnter \033[0m'EXIT'\033[1;32;40m at any time to exit.\n")
+
+    while True: ##### MAIN PROGRAM LOOP
+        print("\033[2J\033[H\033[1m\033[1;32;40mE-SERIES COMPONENT SOLVER\n"
+              "Determine E-series values for components based on mathematical relationships.\n"
+              "Enter \033[0m'EXIT'\033[1;32;40m at any time to exit.\n")
         
-        print("\033[1;32;40mPlease enter names of components, one at a time:\n(Press [ENTER] without input when all components have been entered.\nAt least one component must be entered before continuing.)\033[0m")
+        print("\033[1;32;40mPlease enter names of components, one at a time:\n"
+              "(Press [ENTER] without input when all components have been entered.\n"
+              "At least one component must be entered before continuing.)\033[0m")
+        
         comp_str = ""
-        while True:
+        while True: ### Component name entry
             try:
                 component = input("\033[2K\033[1;33;40mComponent:  \033[0m")
                 if component.upper() == 'EXIT':
@@ -495,18 +791,21 @@ if __name__ == "__main__":
                     else:
                         raise Exception
                 component = str(component)
-                if not component[0].isalpha():
-                    raise Exception
+                component_check(component, out="exception")
                 comp_str = comp_str + " " + component
+            except InvalidValueError as err:
+                print(f"\033[1;31;40m{err}\033[0m\033[2F")
             except Exception:
                 print("\033[1;31;40mInvalid input.\033[0m\033[2F")
         print("\033[1F\033[2K\n")
         comp_str = comp_str[1:]
-        syms = sp.symbols(comp_str)
         
-        print("\033[1;32;40mPlease enter mathematical relationships for components, one at a time:\n(Press [ENTER] without input when all relationships have been entered.\nAt least one relationship must be entered before continuing.)\033[0m")
+        print("\033[1;32;40mPlease enter mathematical relationships for components, one at a time:\n"
+              "(Press [ENTER] without input when all relationships have been entered.\n"
+              "At least one relationship must be entered before continuing.)\033[0m")
+        
         relationship_list = []
-        while True:
+        while True: ### Relationship equation entry
             try:
                 relationship = input("\033[2K\033[1;33;40mRelationship: \033[0m")
                 if relationship.upper() == 'EXIT':
@@ -518,18 +817,23 @@ if __name__ == "__main__":
                     else:
                         raise Exception
                 else:
+                    relationship_check(relationship, out="exception")
                     left, right = relationship.split('=')
                     sp.parse_expr(left)
                     sp.parse_expr(right)
                     relationship_list.append(relationship)
+            except InvalidValueError as err:
+                print(f"\033[1;31;40m{err}\033[0m\033[2F")
             except Exception:
                 print("\033[1;31;40mInvalid input.\033[0m\033[2F")
         print("\033[1F\033[2K\n")
         
-        print("\033[1;32;40mPlease enter the E-series for each component value:\n(Valid E-series are: 3, 6, 12, 24, 48, 96, 192)\033[0m")
-        e_ser_list = []
+        print("\033[1;32;40mPlease enter the E-series for each component value:\n"
+              "(Valid E-series are: 3, 6, 12, 24, 48, 96, 192)\033[0m")
+        
+        e_ser_tup = ()
         e_ser_dict = {}
-        for comp in comp_str.split(" "):
+        for comp in comp_str.split(" "):    ### E-Series selection, per component
             if comp:
                 while True:
                     try:
@@ -538,20 +842,22 @@ if __name__ == "__main__":
                             print("\033[0m")
                             sys.exit("User exit at E-series selection.")
                         e_ser = int(e_ser)
-                        if e_ser not in [3, 6, 12, 24, 48, 96, 192]:
-                            raise Exception
-                        else:
-                            e_ser_list.append(e_ser)
-                            e_ser_dict[comp] = e_ser
-                            break
+                        e_series_selection_check(e_ser, out="exception")
+                        e_ser_tup = e_ser_tup + (e_ser, )
+                        e_ser_dict[comp] = e_ser
+                        break
+                    except InvalidValueError as err:
+                        print(f"\033[1;31;40m{err}\033[0m\033[2F")
                     except Exception:
                         print("\033[1;31;40mInvalid input.\033[0m\033[2F")
         print()
         print("\033[1F\033[2K\n")
         
-        print("\033[1;32;40mPlease enter the preferred decade for each component:\n(Must be entered as a power of 10, and engineering notation can be used.\nNOTE: Not all components will fall within preferred decade.)\033[0m")
-        decade_list = []
-        for comp in comp_str.split(" "):
+        print("\033[1;32;40mPlease enter the preferred decade for each component:\n"
+              "(Must be entered as a power of 10, and engineering notation can be used.\n"
+              "NOTE: Not all components will fall within preferred decade.)\033[0m")
+        decade_tup = ()
+        for comp in comp_str.split(" "):    ### Decade selection, per component
             if comp:
                 while True:
                     try:
@@ -560,21 +866,24 @@ if __name__ == "__main__":
                             print("\033[0m")
                             sys.exit("User exit at decade entry.")
                         decade = eng_to_float(decade)
-                        decade_list.append(decade)
+                        decade_check(decade, out="exception")
+                        decade_tup = decade_tup + (decade, )
                         break
+                    except InvalidValueError as err:
+                        print(f"\033[1;31;40m{err}\033[0m\033[2F")
                     except Exception:
                         print("\033[1;31;40mInvalid input.\033[0m\033[2F")
         print("\033[2K\n")
         print() 
     
-        time1 = int(time())
+        time1 = time() #Used to calculate calculation elapsed time
         try:
-            values = e_val_select(comp_str, relationship_list, e_ser_list, decade_list)
+            values = e_val_select(comp_str, relationship_list, e_ser_tup, decade_tup)
         except ValueError as error:
             print(f"\033[1;31;40m{error}\033[0m")
-            input()
+            input("Press [ENTER] to quit.\n")
             sys.exit(1)
-        time2 = int(time())
+        time2 = time()
         elapsed = round(time2 - time1, 3)
         if elapsed == 1.0:
             computed_time = f"{elapsed} second."
@@ -587,8 +896,10 @@ if __name__ == "__main__":
         print_e_val_results(values, e_ser_dict)
 
         print("\n\n\n\n")
-        while True:
-            print("\033[2F\033[2K\033[1;33;40m[Enter [S] to save to textfile or [R] to re-run with new values, otherwise press [ENTER] to quit.]\033[0m\033[1E")
+        while True: ### End option selection
+            print("\033[2F\033[2K\033[1;33;40m[Enter [S] to save to textfile or [R] to re-run with new values, "
+                  "otherwise press [ENTER] to quit.]\033[0m\033[1E")
+            
             option = input("\033[2K").upper()
             if option == 'S':
                 name = save_to_textfile(values, e_ser_dict, relationship_list, footer=f"Computed in {computed_time}")
@@ -596,5 +907,5 @@ if __name__ == "__main__":
             elif option == 'R':
                 break
             elif option == '':
-                print("\033[0m")
+                print("\033[0m\n\n")
                 sys.exit("User exit at completion.")
