@@ -177,7 +177,7 @@ Plugging these values into the LC resonant frequency equation yields:
 ```math
 \frac{1}{2\pi \sqrt{(750 \mu H) \cdot (15 \mu F)}} \approx 1.50053 kHz
 ```
-This yields an approximately 0.035% error from the desired frequency.<br/>
+This has a percent error of 0.035% from the desired frequency.<br/>
 <br/>
 
 ## Using as an API
@@ -313,7 +313,7 @@ qual = f"{Q} = ({tau}) / (R1*C1 + R2*C1 + (1-({K}))*R1*C2)"
 
 relationships = [freq, gain, qual]
 
-results = ev.e_val_select(components, relationships, e_series_selection, decade_selection)
+results = ev.e_val_select(components, relationships, e_series_selection, decade_selection) # Solver engine
 
 ev.print_e_val_results(results) # Prints results to terminal
 
