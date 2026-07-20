@@ -141,23 +141,23 @@ def e_val_select(components: str, relationships: list, e_series_selection: tuple
         pretty_name='\u221A3'): 1.73205080756887729352744634150587,
         
         ### ENGINEERING NOTATION
-        sp.Symbol('Y'):        1e24,
-        sp.Symbol('Z'):        1e21,
-        sp.Symbol('E'):        1e18,
-        sp.Symbol('P'):        1e15,
-        sp.Symbol('T'):        1e12,
-        sp.Symbol('G'):        1e9,
-        sp.Symbol('M'):        1e6,
-        sp.Symbol('k'):        1e3,
-        sp.Symbol('m'):        1e-3,
+        sp.Symbol('Y'):        10e24,
+        sp.Symbol('Z'):        10e21,
+        sp.Symbol('E'):        10e18,
+        sp.Symbol('P'):        10e15,
+        sp.Symbol('T'):        10e12,
+        sp.Symbol('G'):        10e9,
+        sp.Symbol('M'):        10e6,
+        sp.Symbol('k'):        10e3,
+        sp.Symbol('m'):        10e-3,
         sp.Symbol('u',
-        pretty_name='\u03BC'): 1e-6,
-        sp.Symbol('n'):        1e-9,
-        sp.Symbol('p'):        1e-12,
-        sp.Symbol('f'):        1e-15,
-        sp.Symbol('a'):        1e-18,
-        sp.Symbol('z'):        1e-21,
-        sp.Symbol('y'):        1e-24}
+        pretty_name='\u03BC'): 10e-6,
+        sp.Symbol('n'):        10e-9,
+        sp.Symbol('p'):        10e-12,
+        sp.Symbol('f'):        10e-15,
+        sp.Symbol('a'):        10e-18,
+        sp.Symbol('z'):        10e-21,
+        sp.Symbol('y'):        10e-24}
     local_dict = {s.name: s for s in syms} | {c.name: c for c in constants.keys()} # 
     
     equation_list = []

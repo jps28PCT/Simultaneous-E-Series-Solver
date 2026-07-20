@@ -16,7 +16,7 @@ The solver requires component names, component relationships, component E-Series
 ### Component Names
 Component names must start with a letter, and letters and numbers can follow. Names can be of any length. It is recommended to use standard schematic [component reference designators](https://wikipedia.org/wiki/Reference_designator).<br/>
 #### Examples:
-`R1`, `R2`, `C1`, `L1`, etc.
+`'R1'`, `'R2'`, `'C1'`, `'L1'`, etc.
 
 
 ### Component Relationship Equations
@@ -24,8 +24,8 @@ These equations should be based on the topology of the circuit, and should refle
 When finished entering component relationships, press `[ENTER]` on the empty input line.
 
 #### Examples:
-`3.3 = 5 * (R1/(R1+R2))`<br/>
-`1*k = 1 / (2 * pi * sqrt(L1 * C1))`<br/>
+`" 3.3 = 5 * (R1/(R1+R2)) "`<br/>
+`" 1*k = 1 / (2 * pi * sqrt(L1 * C1)) "`<br/>
 
 #### Valid Operators:
 | Operator | Use |   | Operator | Use |
@@ -58,10 +58,12 @@ Each component must be associated with an E-Series. Higher E-Series have smaller
 Each component must also be associated with a desired decade. Decades can be entered as decimal values, or in scientific or engineering notation. They must be valid powers of 10. Some components' values may not fall within their decade, as the final values are dictated by the relationship equations.
 
 #### Examples:
-`1`, `100`, `0.001`, `10k`, `100u`, `1e17`, `1e-11`, etc.
+`1`, `100`, `0.001`, `'10k'`, `'100u'`, `1e17`, `1e-11`, etc.<br/>
 
 <br/>
 
+***
+***
 
 ## Running as a Script
 Running as a script allows the program to be used as a CLI application.<br/>
@@ -125,8 +127,8 @@ The goal is to create an LC tank circuit resonant at 1.5 kHz, using an E-24 indu
 ```math
 f= \frac{1}{2\pi \sqrt{LC}}
 ```
-<br/>
 
+##### Script:
 ```ansi
 E-SERIES COMPONENT SOLVER
 Determine E-series values for components based on mathematical relationships.
@@ -158,27 +160,30 @@ Decade for L1: 100u
 Decade for C1: 10n
 
 
-Computed in 0.366 seconds.
+Computed in 0.52 seconds.
 
 ┌───────────────────────────────────────┐
 │            R E S U L T S :            │
 └───────────────────────────────────────┘
 L1: 750 μ               Error: 0.000%
-C1: 15 μ                Error: 0.070%
-
+C1: 150 n               Error: 0.070%
 
 
 [Enter [S] to save to textfile or [R] to re-run with new values, otherwise press [ENTER] to quit.]
 
 ```
-The application selected a 750 µH inductor, and a 15 µF capacitor. Both components have an error less than the maximum tolerance of their selected E-Series.<br/>
+The application selected a 750 µH inductor, and a 150 nF capacitor. Both components have an error less than the maximum tolerance of their selected E-Series.<br/>
 <br/>
 Plugging these values into the LC resonant frequency equation yields:
 ```math
 \frac{1}{2\pi \sqrt{(750 \mu H) \cdot (15 \mu F)}} \approx 1.50053 kHz
 ```
 This has a percent error of 0.035% from the desired frequency.<br/>
+
 <br/>
+
+***
+***
 
 ## Using as an API
 Custom scripts can be developed to automate workflows using the component value solver engine.<br/>
@@ -239,10 +244,10 @@ This indicates the relationship equations are unsolvable for real-world componen
 import e_vals as ev
 
 # Create voltage divider from 5V to 3.3V
-# with total current draw of 10mA
+# with total current draw of 1mA
 
 components = "R1 R2"
-relationships = [ "3.3 = 5 * R2/(R1+R2)",  "5 / (R1+R2) = 10*m"]       
+relationships = [ "3.3 = 5 * R2/(R1+R2)",  "5 / (R1+R2) = 1*m"]       
 e_series_selection = (24, 24)
 decade_selection = (100, '1k')
 
@@ -284,6 +289,8 @@ A_v = 1 +\frac{R_f}{R_g}
 Q = \frac{\sqrt{R_1R_2C_1C_2}}{R_1C_1 + R_2C_1 + R_1C_2(1-A_v)}
 ```
 <br/>
+
+##### Custom script:
 
 ```python
 import e_vals as ev
