@@ -768,7 +768,7 @@ No part of this section is callable from another file.
 """
 
 if __name__ == "__main__":
-    import threading, itertools
+    import threading, itertools, collections
 
     while True: ##### MAIN PROGRAM LOOP
         print("\033[2J\033[H\033[1m\033[1;32;40mE-SERIES COMPONENT SOLVER\n"
@@ -886,26 +886,28 @@ if __name__ == "__main__":
             waitStr = '=====   '
             frameNum = 8
             step = (2, 3)
-        done = threading.Event()
+        waitDone = threading.Event()
         waitAnimation = threading.Thread(
-        target=lambda: [
+        target=lambda: collections.deque(
             (
-                # Call element directly by index: frames[0], frames[1], etc.
+                (
                 print(f"\r\033[2K\033[1;36;40m{waitStr[i%frameNum]}{waitStr[(i+step[0])%frameNum]}{waitStr[(i+step[1])%frameNum]}\033[0m Calculating ...", end="", flush=True),
                 sleep(0.1)
-            )
-            for i in itertools.takewhile(lambda _: not done.is_set(), itertools.count())
-            ]
+                )
+            for i in itertools.takewhile(lambda _: not waitDone.is_set(), itertools.count())
+            ), 
+            maxlen=0),
+            daemon=True
         )
 
         time1 = time() #Used to calculate calculation elapsed time
         try:
             waitAnimation.start()
             values = e_val_select(comp_str, relationship_list, e_ser_tup, decade_tup) # Engine call
-            done.set()
+            waitDone.set()
             waitAnimation.join()
         except ValueError as error:
-            done.set()
+            waitDone.set()
             waitAnimation.join()
             time2 = time()
             if (time2 - time1) > 5.0:
@@ -914,7 +916,7 @@ if __name__ == "__main__":
             input("Press [ENTER] to quit.\n")
             sys.exit(1)
         except Exception as error:
-            done.set()
+            waitDone.set()
             waitAnimation.join()
             print("\r\033[2K\033[?25h\033[0m\n")
             sys.exit(error)
