@@ -12,7 +12,7 @@ The results will be written to the screen.
 
 
 import sys
-from time import time, ctime
+from time import time, ctime, sleep
 from math import log10
 
 try:
@@ -768,6 +768,7 @@ No part of this section is callable from another file.
 """
 
 if __name__ == "__main__":
+    import threading, itertools
 
     while True: ##### MAIN PROGRAM LOOP
         print("\033[2J\033[H\033[1m\033[1;32;40mE-SERIES COMPONENT SOLVER\n"
@@ -874,18 +875,49 @@ if __name__ == "__main__":
                     except Exception:
                         print("\033[1;31;40mInvalid input.\033[0m\033[2F")
         print("\033[2K\n")
-        print() 
-    
+        print("\n\n\033[?25l") 
+
+        encoding=sys.getdefaultencoding()
+        if encoding == "utf-8":
+            waitStr = "\u2581\u2582\u2583\u2584\u2585\u2586\u2587\u2588\u2587\u2586\u2585\u2584\u2583\u2582"
+            frameNum = 14
+            step = (5, 10)
+        else:
+            waitStr = '=====   '
+            frameNum = 8
+            step = (2, 3)
+        done = threading.Event()
+        waitAnimation = threading.Thread(
+        target=lambda: [
+            (
+                # Call element directly by index: frames[0], frames[1], etc.
+                print(f"\r\033[2K\033[1;36;40m{waitStr[i%frameNum]}{waitStr[(i+step[0])%frameNum]}{waitStr[(i+step[1])%frameNum]}\033[0m Calculating ...", end="", flush=True),
+                sleep(0.1)
+            )
+            for i in itertools.takewhile(lambda _: not done.is_set(), itertools.count())
+            ]
+        )
+
         time1 = time() #Used to calculate calculation elapsed time
         try:
-            values = e_val_select(comp_str, relationship_list, e_ser_tup, decade_tup)
+            waitAnimation.start()
+            values = e_val_select(comp_str, relationship_list, e_ser_tup, decade_tup) # Engine call
+            done.set()
+            waitAnimation.join()
         except ValueError as error:
+            done.set()
+            waitAnimation.join()
             time2 = time()
-            if time2 - time1 > 5.0:
+            if (time2 - time1) > 5.0:
                 print("\a", end="", flush=True)
-            print(f"\033[1;31;40m{error}\033[0m")
+            print(f"\r\033[2K\033[1;31;40m{error}\033[0m")
             input("Press [ENTER] to quit.\n")
             sys.exit(1)
+        except Exception as error:
+            done.set()
+            waitAnimation.join()
+            print("\r\033[2K\033[?25h\033[0m\n")
+            sys.exit(error)
         time2 = time()
         elapsed = round(time2 - time1, 3)
         if elapsed > 5.0:
@@ -896,14 +928,14 @@ if __name__ == "__main__":
             computed_time = "less than one millisecond."
         else:
             computed_time = f"{elapsed} seconds."
-        print(f"\n\nComputed in {computed_time}\n\n")
+        print(f"\r\033[2KComputed in {computed_time}\n\n")
         
         print_e_val_results(values, e_ser_dict)
 
         print("\n\n\n\n")
         while True: ### End option selection
             print("\033[2F\033[2K\033[1;33;40m[Enter [S] to save to textfile or [R] to re-run with new values, "
-                  "otherwise press [ENTER] to quit.]\033[0m\033[1E")
+                  "otherwise press [ENTER] to quit.]\033[0m\033[1E\033[?25h")
             
             option = input("\033[2K").upper()
             if option == 'S':
