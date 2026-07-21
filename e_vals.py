@@ -880,11 +880,16 @@ if __name__ == "__main__":
         try:
             values = e_val_select(comp_str, relationship_list, e_ser_tup, decade_tup)
         except ValueError as error:
+            time2 = time()
+            if time2 - time1 > 5.0:
+                print("\a", end="", flush=True)
             print(f"\033[1;31;40m{error}\033[0m")
             input("Press [ENTER] to quit.\n")
             sys.exit(1)
         time2 = time()
         elapsed = round(time2 - time1, 3)
+        if elapsed > 5.0:
+            print("\a", end="", flush=True)
         if elapsed == 1.0:
             computed_time = f"{elapsed} second."
         elif elapsed < 0.001:
