@@ -795,9 +795,9 @@ if __name__ == "__main__":
                 component_check(component, out="exception")
                 comp_str = comp_str + " " + component
             except InvalidValueError as err:
-                print(f"\033[1;31;40m{err}\033[0m\033[2F")
+                print(f"\033[2K\033[1;31;40m{err}\033[0m\033[2F")
             except Exception:
-                print("\033[1;31;40mInvalid input.\033[0m\033[2F")
+                print("\033[2K\033[1;31;40mInvalid input.\033[0m\033[2F")
         print("\033[1F\033[2K\n")
         comp_str = comp_str[1:]
         
@@ -824,9 +824,9 @@ if __name__ == "__main__":
                     sp.parse_expr(right)
                     relationship_list.append(relationship)
             except InvalidValueError as err:
-                print(f"\033[1;31;40m{err}\033[0m\033[2F")
+                print(f"\033[2K\033[1;31;40m{err}\033[0m\033[2F")
             except Exception:
-                print("\033[1;31;40mInvalid input.\033[0m\033[2F")
+                print("\033[2K\033[1;31;40mInvalid input.\033[0m\033[2F")
         print("\033[1F\033[2K\n")
         
         print("\033[1;32;40mPlease enter the E-series for each component value:\n"
@@ -848,9 +848,9 @@ if __name__ == "__main__":
                         e_ser_dict[comp] = e_ser
                         break
                     except InvalidValueError as err:
-                        print(f"\033[1;31;40m{err}\033[0m\033[2F")
+                        print(f"\033[2K\033[1;31;40m{err}\033[0m\033[2F")
                     except Exception:
-                        print("\033[1;31;40mInvalid input.\033[0m\033[2F")
+                        print("\033[2K\033[1;31;40mInvalid input.\033[0m\033[2F")
         print()
         print("\033[1F\033[2K\n")
         
@@ -871,9 +871,9 @@ if __name__ == "__main__":
                         decade_tup = decade_tup + (decade, )
                         break
                     except InvalidValueError as err:
-                        print(f"\033[1;31;40m{err}\033[0m\033[2F")
+                        print(f"\033[2K\033[1;31;40m{err}\033[0m\033[2F")
                     except Exception:
-                        print("\033[1;31;40mInvalid input.\033[0m\033[2F")
+                        print("\033[2K\033[1;31;40mInvalid input.\033[0m\033[2F")
         print("\033[2K\n")
         print("\n\n\033[?25l") 
 
@@ -948,3 +948,5 @@ if __name__ == "__main__":
             elif option == '':
                 print("\033[0m\n\n")
                 sys.exit("User exit at completion.")
+            else:
+                print(f"\033[2F\033[2K\033[1;31;40mInvalid command.")
