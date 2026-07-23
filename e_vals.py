@@ -59,26 +59,26 @@ def e_val_select(components: str, relationships: list, e_series_selection: tuple
     e_series_array = []
     for item in e_series_selection:
         match item:
-            case 3:
+            case 3:                                                         # E-3
                 e_vals = [1.0, 2.2, 4.7]
-            case 6:
+            case 6:                                                         # E-6
                 e_vals = [1.0, 1.5, 2.2, 3.3, 4.7, 6.8]
-            case 12:
+            case 12:                                                        # E-12
                 e_vals = [1.0, 1.2, 1.5, 1.8, 2.2, 2.7, 
                           3.3, 3.9, 4.7, 5.6, 6.8, 8.2]
-            case 24:
+            case 24:                                                        # E-24
                 e_vals = [1.0, 1.1, 1.2, 1.3, 1.5, 1.6, 
                           1.8, 2.0, 2.2, 2.4, 2.7, 3.0, 
                           3.3, 3.6, 3.9, 4.3, 4.7, 5.1, 
                           5.6, 6.2, 6.8, 7.5, 8.2, 9.1]
-            case 48:
+            case 48:                                                        # E-48
                 e_vals = [1.00, 1.05, 1.10, 1.15, 1.21, 1.27, 1.33, 1.40, 
                           1.47, 1.54, 1.62, 1.69, 1.78, 1.87, 1.96, 2.05, 
                           2.15, 2.26, 2.37, 2.49, 2.61, 2.74, 2.87, 3.01, 
                           3.16, 3.32, 3.48, 3.65, 3.83, 4.02, 4.22, 4.42, 
                           4.64, 4.87, 5.11, 5.36, 5.62, 5.90, 6.19, 6.49, 
                           6.81, 7.15, 7.50, 7.87, 8.25, 8.66, 9.09, 9.53]
-            case 96:
+            case 96:                                                        # E-96
                 e_vals = [1.00, 1.02, 1.05, 1.07, 1.10, 1.13, 1.15, 1.18, 
                           1.21, 1.24, 1.27, 1.30, 1.33, 1.37, 1.40, 1.43, 
                           1.47, 1.50, 1.54, 1.58, 1.62, 1.65, 1.69, 1.74, 
@@ -91,7 +91,7 @@ def e_val_select(components: str, relationships: list, e_series_selection: tuple
                           5.62, 5.76, 5.90, 6.04, 6.19, 6.34, 6.49, 6.65, 
                           6.81, 6.98, 7.15, 7.32, 7.50, 7.68, 7.87, 8.06, 
                           8.25, 8.45, 8.66, 8.87, 9.09, 9.31, 9.53, 9.76]
-            case 192:
+            case 192:                                                       # E-192
                 e_vals = [1.00, 1.01, 1.02, 1.04, 1.05, 1.06, 1.07, 1.09, 
                           1.10, 1.11, 1.13, 1.14, 1.15, 1.17, 1.18, 1.20, 
                           1.21, 1.23, 1.24, 1.26, 1.27, 1.29, 1.30, 1.32, 
@@ -117,12 +117,13 @@ def e_val_select(components: str, relationships: list, e_series_selection: tuple
                           8.25, 8.35, 8.45, 8.56, 8.66, 8.76, 8.87, 8.98, 
                           9.09, 9.20, 9.31, 9.42, 9.53, 9.65, 9.76, 9.88]
                 
-        e_series_array.append(e_vals)
+        e_series_array.append(e_vals)   # Make list of E-Series value lists, in order of 'e_series_selection'
     
     decade = []
-    for value in decade_selection:
+    for value in decade_selection:              # Convert all 'decade_selection' values to floats, and place in 'decade'
         decade.append(eng_to_float(str(value)))
-    symList = components.split(' ')
+
+    symList = components.split(' ') # Seperate string of components into list
     if len(symList) == 0:
         raise Exception("No Components were passed. Unable to continue.")
     elif len(symList) == 1:
@@ -130,7 +131,7 @@ def e_val_select(components: str, relationships: list, e_series_selection: tuple
     else:
         syms = sp.symbols(components, positive=True, real=True)
     
-    constants = {
+    constants = {  # Pre-determined values to make equation entry simpler
         ###CONSTANTS
         sp.Symbol('pi'):        3.14159265358979323846264338327950,
         sp.Symbol('e'):         2.71828182845904523536028747135266,
@@ -158,18 +159,21 @@ def e_val_select(components: str, relationships: list, e_series_selection: tuple
         sp.Symbol('a'):        10e-18,
         sp.Symbol('z'):        10e-21,
         sp.Symbol('y'):        10e-24}
-    local_dict = {s.name: s for s in syms} | {c.name: c for c in constants.keys()} # 
-    
+    # Concatenate dictionaries of symbols and constants for substitution
+    local_dict = {s.name: s for s in syms} | {c.name: c for c in constants.keys()} 
+
     equation_list = []
+    # Make list of equations by seperating at '=' and parsing with SymPy
     for relationship in relationships:
         left, right = relationship.split('=')
-        
+
         relat_ex = sp.parse_expr(right, local_dict=local_dict).subs(constants)
         relat_eq = sp.parse_expr(left, local_dict=local_dict).subs(constants)
         equation = sp.Eq(relat_ex, relat_eq)
         
         equation_list.append(equation)
-    
+
+    # Create dictionary of equations solved for a component
     value_dict = sp.solve(equation_list, syms, dict=True, rational=True, manual=True)
     if not value_dict:
         value_dict = sp.solve(equation_list, syms, dict=True, rational=True, manual=False)
@@ -181,12 +185,15 @@ def e_val_select(components: str, relationships: list, e_series_selection: tuple
     base_syms = []
     sym_index = []
     sym_incre = []
+
+    # Create structures to track free variables and solver indexing
     for sym in syms:
         if sym not in value_dict[0]:
-            base_syms.append(sym)
-            sym_index.append(0)
-            sym_incre.append(False)
-    
+            base_syms.append(sym)   # List of free variables
+            sym_index.append(0)     # List of indicies
+            sym_incre.append(False) # List of 'index' tags
+
+    ### FULLY DETERMINED - Round each component to nearest E-Series value
     if not base_syms:
         for sym in syms:
             raw = float(value_dict[0][sym])
@@ -202,7 +209,7 @@ def e_val_select(components: str, relationships: list, e_series_selection: tuple
                 exponent += 1
                 raw = raw / 10
             
-            rounded = min(e_series_array[syms.index(sym)], key=lambda x: abs(x - raw))
+            rounded = min(e_series_array[syms.index(sym)], key=lambda x: abs(x - raw))  # Rounding to E-Series
             
             raw = raw * 10**exponent
             rounded = rounded * 10**exponent
@@ -212,6 +219,7 @@ def e_val_select(components: str, relationships: list, e_series_selection: tuple
             values[sym] = rounded
             errors[sym] = err
 
+    ### UNDER-DETERMINED - 
     else:       
         pct_diff_sum = float('inf')
         for val_dict in value_dict:     #For every dictionary returned by Sympy in sp.solve()
@@ -225,7 +233,7 @@ def e_val_select(components: str, relationships: list, e_series_selection: tuple
                         if sym_incre[base_index]:                           # If the current base symbol is flagged to increment
                             sym_incre[base_index] = False                   #   Reset the flag
                             series_index += 1                               #   Increment the index by 1
-                            if series_index == len(e_series_array[index]):  #   If index is incremented outside of e-series value list
+                            if series_index >= len(e_series_array[index]):  #   If index is incremented outside of e-series value list
                                 series_index = 0                            #       Set index to 0
                                 if base_index + 1 < len(sym_incre):         #       If not last item in sym_incre list
                                     sym_incre[base_index+1] = True          #           Set the flag so the next base symbol index increments
@@ -259,7 +267,7 @@ def e_val_select(components: str, relationships: list, e_series_selection: tuple
                         exponent += 1
                         raw = raw / 10
                         
-                    rounded = min(e_series_array[syms.index(key)], key=lambda x: abs(x - raw))
+                    rounded = min(e_series_array[syms.index(key)], key=lambda x: abs(x - raw))  # Rounding to E-Series
                     
                     raw = raw * 10**exponent
                     rounded = rounded * 10**exponent
