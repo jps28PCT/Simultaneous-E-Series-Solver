@@ -301,13 +301,14 @@ def e_val_select(components: str, relationships: list, e_series_selection: tuple
                         values[key] = temp_val_dict[key]
                         errors[key] = temp_pct_diff_dict[key]
     
-    if not values and (negativeComponent and zeroComponent):
-        raise ValueError("Negative and zero component values detected. Unable to solve.")
-    elif not values and negativeComponent:
-        raise ValueError("Negative component values detected. Unable to solve.")
-    elif not values and zeroComponent:
-        raise ValueError("Component values of zero detected. Unable to solve.")
-    elif not values:
+        if not values and (negativeComponent and zeroComponent):
+            raise ValueError("Negative and zero component values detected. Unable to solve.")
+        elif not values and negativeComponent:
+            raise ValueError("Negative component values detected. Unable to solve.")
+        elif not values and zeroComponent:
+            raise ValueError("Component values of zero detected. Unable to solve.")
+    
+    if not values:
         raise ValueError("No valid component values detected. Unable to solve.")
     
     returnDict = {}
