@@ -965,12 +965,18 @@ if __name__ == "__main__":
         print_e_val_results(values, e_ser_dict)
 
         print("\n\n\n\n")
+        allowSave = True
         while True: ### End option selection
-            print("\033[2F\033[2K\033[1;33;40m[Enter [S] to save to textfile or [R] to re-run with new values, "
-                  "otherwise press [ENTER] to quit.]\033[0m\033[1E\033[?25h")
+            if allowSave:
+                print("\033[2F\033[2K\033[1;33;40m[Enter [S] to save to textfile or [R] to re-run with new values, "
+                      "otherwise press [ENTER] to quit.]\033[0m\033[1E\033[?25h")
+            else:
+                print("\033[2F\033[2K\033[1;33;40m[Enter [R] to re-run with new values, "
+                      "or press [ENTER] to quit.]\033[0m\033[1E\033[?25h")
             
             option = input("\033[2K").upper()
-            if option == 'S':
+            if option == 'S' and allowSave:
+                allowSave = False
                 name = save_to_textfile(values, e_ser_dict, relationship_list, footer=f"Computed in {computed_time}")
                 print(f"\033[2F\033[2K\033[1;33;40mSaved to \033[0m{name}")
             elif option == 'R':
