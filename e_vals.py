@@ -199,6 +199,8 @@ def e_val_select(components: str, relationships: list, e_series_selection: tuple
             raw = float(value_dict[0][sym])
             if raw < 0:
                 raise ValueError("Negative component value detected. No real solution.")
+            elif raw == 0:
+                raise ValueError("Component value of zero detected. No real solution.")
                 
             exponent = 0
             while abs(raw) < 1:
@@ -220,7 +222,10 @@ def e_val_select(components: str, relationships: list, e_series_selection: tuple
             errors[sym] = err
 
     ### UNDER-DETERMINED - 
-    else:       
+    else:
+        negativeComponent = False
+        zeroComponent = False
+        skip = False
         pct_diff_sum = float('inf')
         for val_dict in value_dict:     #For every dictionary returned by Sympy in sp.solve()
             Run = True
@@ -254,9 +259,13 @@ def e_val_select(components: str, relationships: list, e_series_selection: tuple
                     raw = val_dict[key].evalf(subs=base_syms_vals)
 
                     if raw < 0:
-                        raise ValueError("Negative component value detected. No real solution.")
+                        skip = True
+                        negativeComponent = True
+                        break
                     elif raw == 0:
-                        raise ValueError("Component value of zero detected. No real solution.")
+                        skip = True
+                        zeroComponent = True
+                        break
                     
                     exponent = 0
                     while abs(raw) < 1:
@@ -275,7 +284,10 @@ def e_val_select(components: str, relationships: list, e_series_selection: tuple
                     temp_val_dict[key] = rounded
                     
                     temp_pct_diff_dict[key] = abs(rounded - raw)/raw
-                
+
+                if skip:
+                    skip = False
+                    continue
                 temp_pct_diff_sum = 0
                 for key in temp_pct_diff_dict:
                     temp_pct_diff_sum += temp_pct_diff_dict[key]
@@ -288,6 +300,15 @@ def e_val_select(components: str, relationships: list, e_series_selection: tuple
                     for key in temp_val_dict:
                         values[key] = temp_val_dict[key]
                         errors[key] = temp_pct_diff_dict[key]
+    
+    if not values and (negativeComponent and zeroComponent):
+        raise ValueError("Negative and zero component values detected. Unable to solve.")
+    elif not values and negativeComponent:
+        raise ValueError("Negative component values detected. Unable to solve.")
+    elif not values and zeroComponent:
+        raise ValueError("Component values of zero detected. Unable to solve.")
+    elif not values:
+        raise ValueError("No valid component values detected. Unable to solve.")
     
     returnDict = {}
     for sym in syms:
