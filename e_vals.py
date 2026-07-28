@@ -799,6 +799,7 @@ No part of this section is callable from another file.
 
 if __name__ == "__main__":
     import threading, itertools, collections
+    alertTime = 3.0    # Amount of elapsed seconds after which the user will be alerted after e_val_select() function call
 
     while True: ##### MAIN PROGRAM LOOP
         print("\033[2J\033[H\033[1m\033[1;32;40mE-SERIES COMPONENT SOLVER\n"
@@ -940,19 +941,35 @@ if __name__ == "__main__":
             waitDone.set()
             waitAnimation.join()
             time2 = time()
-            if (time2 - time1) > 5.0:
-                print("\a", end="", flush=True)
-            print(f"\r\033[2K\033[1;31;40m{error}\033[0m")
-            input("Press [ENTER] to quit.\n")
-            sys.exit(1)
+            if (time2 - time1) > alertTime:
+                print("\a", end="", flush=True)    # Terminal bell
+            print(f"\r\033[2K\033[1;31;40m{error}\033[0m\033[?25h")
+            while True:
+                 print("\033[2F\033[2K\033[1;33;40m[Enter [R] to re-run with new values, "
+                          "or press [ENTER] to quit.]\033[0m\033[1E\033[?25h")
+                
+                option = input("\033[2K").upper()
+                elif option == 'R':
+                    break
+                elif option == '':
+                    print("\033[0m\n\n")
+                    sys.exit("User exit at value error.")
+                else:
+                    print(f"\033[2F\033[2K\033[1;31;40mInvalid command.")
+            continue    # Skip rest of script and restart from top of main loop.
+
         except Exception as error:
             waitDone.set()
             waitAnimation.join()
+            time2 = time()
+            if (time2 - time1) > alertTime:
+                print("\a", end="", flush=True)    # Terminal bell
             print("\r\033[2K\033[?25h\033[0m\n")
             sys.exit(error)
+
         time2 = time()
         elapsed = round(time2 - time1, 3)
-        if elapsed > 5.0:
+        if elapsed > alertTime:
             print("\a", end="", flush=True)
         if elapsed == 1.0:
             computed_time = f"{elapsed} second."
