@@ -223,6 +223,7 @@ def e_val_select(components: str, relationships: list, e_series_selection: tuple
     else:       
         pct_diff_sum = float('inf')
         for val_dict in value_dict:     #For every dictionary returned by Sympy in sp.solve()
+            sym_incre[0] = False        # Flags the first base symbol to start at "1.0" for each dictionary sweep
             Run = True
             while Run:
                 base_syms_vals = {}
