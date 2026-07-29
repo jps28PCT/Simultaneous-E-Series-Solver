@@ -345,8 +345,15 @@ def print_e_val_results(valueDict: dict, seriesDict: dict=None) -> None:
                 sigfigs = 3
         else:
             sigfigs = 3
+        error = valueDict[component][1] * 100
+        if error == 0.0:
+            pct_error = "0"
+        elif error < 0.001:
+            pct_error = "<0.001"
+        else:
+            pct_error = f"{error:.3f}"
         print(f"\033[1;33;40m{component}:\033[0m {eng_note(valueDict[component][0], sigfigs, encoding=sys.getdefaultencoding())}"
-              f"\t\t\033[1;36;40mError:\033[0m {valueDict[component][1]*100:.3f}%")
+              f"\t\t\033[1;36;40mError:\033[0m {pct_error} %")
 
     return None
     
@@ -365,7 +372,7 @@ def eng_note(inputValue: float, numSigFigs: int=0, encoding: str="ASCII") -> str
                             Defaults to zero.
         encoding (str):     Selects encoding style for "micro" designation.
                             encoding="ASCII": "micro" is written as "u"
-                            encoding="UFT-8": "micro" is written as "µ"
+                            encoding="UTF-8": "micro" is written as "µ"
                             Default: "ASCII"
     Returns:
         String formatted in engineering notation.
