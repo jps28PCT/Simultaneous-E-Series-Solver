@@ -815,7 +815,7 @@ if __name__ == "__main__":
             try:
                 component = input("\033[2K\033[1;33;40mComponent:  \033[0m")
                 if component.upper() == 'EXIT':
-                    print("\033[0m")
+                    print("\033[0m\033[2J")
                     sys.exit("User exit at component entry.")
                 elif component == "":
                     if comp_str:
@@ -829,7 +829,7 @@ if __name__ == "__main__":
                 print(f"\033[2K\033[1;31;40m{err}\033[0m\033[2F")
             except Exception:
                 print("\033[2K\033[1;31;40mInvalid input.\033[0m\033[2F")
-        print("\033[1F\033[2K\n")
+        print("\033[1F\033[2K\033[1E\033[2K")
         comp_str = comp_str[1:]
         
         print("\033[1;32;40mPlease enter mathematical relationships for components, one at a time:\n"
@@ -841,7 +841,7 @@ if __name__ == "__main__":
             try:
                 relationship = input("\033[2K\033[1;33;40mRelationship: \033[0m")
                 if relationship.upper() == 'EXIT':
-                    print("\033[0m")
+                    print("\033[0m\033[2J")
                     sys.exit("User exit at relationship entry.")
                 elif relationship == '':
                     if relationship_list:
@@ -858,7 +858,7 @@ if __name__ == "__main__":
                 print(f"\033[2K\033[1;31;40m{err}\033[0m\033[2F")
             except Exception:
                 print("\033[2K\033[1;31;40mInvalid input.\033[0m\033[2F")
-        print("\033[1F\033[2K\n")
+        print("\033[1F\033[2K\033[1E\033[2K")
         
         print("\033[1;32;40mPlease enter the E-series for each component value:\n"
               "(Valid E-series are: 3, 6, 12, 24, 48, 96, 192)\033[0m")
@@ -871,7 +871,7 @@ if __name__ == "__main__":
                     try:
                         e_ser = input(f"\033[2K\033[1;33;40mE-Series for {comp}: \033[0m")
                         if e_ser.upper() == 'EXIT':
-                            print("\033[0m")
+                            print("\033[0m\033[2J")
                             sys.exit("User exit at E-series selection.")
                         e_ser = int(e_ser)
                         e_series_selection_check(e_ser, out="exception")
@@ -895,7 +895,7 @@ if __name__ == "__main__":
                     try:
                         decade = input(f"\033[2K\033[1;33;40mDecade for {comp}: \033[0m")
                         if decade.upper() == 'EXIT':
-                            print("\033[0m")
+                            print("\033[0m\033[2J")
                             sys.exit("User exit at decade entry.")
                         decade = eng_to_float(decade)
                         decade_check(decade, out="exception")
@@ -944,6 +944,7 @@ if __name__ == "__main__":
             if (time2 - time1) > alertTime:
                 print("\a", end="", flush=True)    # Terminal bell
             print(f"\r\033[2K\033[1;31;40m{error}\033[0m\033[?25h")
+            print("\n\n")
             while True:
                 print("\033[2F\033[2K\033[1;33;40m[Enter [R] to re-run with new values, "
                           "or press [ENTER] to quit.]\033[0m\033[1E\033[?25h")
@@ -951,14 +952,15 @@ if __name__ == "__main__":
                 if option == 'R':
                     break
                 elif option == '':
-                    print("\033[0m\n\n")
+                    print("\033[0m\033[2J")
                     sys.exit("User exit at value error.")
                 else:
                     print(f"\033[2F\033[2K\033[1;31;40mInvalid command.")
             continue    # Skip rest of script and restart from top of main loop.
 
         except KeyboardInterrupt:
-            print("\r\033[2K\033[?25h\033[0m\n")
+            print("\r\033[2K\033[?25h\033[0m")
+            print("\033[0m\033[2J")
             sys.exit("User keyboard interrupt.")
 
         except Exception as error:
@@ -967,7 +969,8 @@ if __name__ == "__main__":
             time2 = time()
             if (time2 - time1) > alertTime:
                 print("\a", end="", flush=True)    # Terminal bell
-            print("\r\033[2K\033[?25h\033[0m\n")
+            print("\r\033[2K\033[?25h\033[0m")
+            print("\033[0m\033[2J")
             sys.exit(error)
 
         time2 = time()
@@ -1003,6 +1006,7 @@ if __name__ == "__main__":
                 break
             elif option == '':
                 print("\033[0m\n\n")
+                print("\033[0m\033[2J")
                 sys.exit("User exit at completion.")
             else:
                 print(f"\033[2F\033[2K\033[1;31;40mInvalid command.")
