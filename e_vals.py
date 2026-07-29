@@ -945,11 +945,10 @@ if __name__ == "__main__":
                 print("\a", end="", flush=True)    # Terminal bell
             print(f"\r\033[2K\033[1;31;40m{error}\033[0m\033[?25h")
             while True:
-                 print("\033[2F\033[2K\033[1;33;40m[Enter [R] to re-run with new values, "
+                print("\033[2F\033[2K\033[1;33;40m[Enter [R] to re-run with new values, "
                           "or press [ENTER] to quit.]\033[0m\033[1E\033[?25h")
-                
                 option = input("\033[2K").upper()
-                elif option == 'R':
+                if option == 'R':
                     break
                 elif option == '':
                     print("\033[0m\n\n")
