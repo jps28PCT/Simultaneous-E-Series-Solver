@@ -166,7 +166,7 @@ Computed in 0.52 seconds.
 │            R E S U L T S :            │
 └───────────────────────────────────────┘
 L1: 750 μ               Error: 0.000%
-C1: 150 n               Error: 0.070%
+C1: 15 μ                Error: 0.070%
 
 
 [Enter [S] to save to textfile or [R] to re-run with new values, otherwise press [ENTER] to quit.]
@@ -244,10 +244,10 @@ This indicates the relationship equations are unsolvable for real-world componen
 import e_vals as ev
 
 # Create voltage divider from 5V to 3.3V
-# with total current draw of 1mA
+# with total current draw of 10mA
 
 components = "R1 R2"
-relationships = [ "3.3 = 5 * R2/(R1+R2)",  "5 / (R1+R2) = 1*m"]       
+relationships = [ "3.3 = 5 * R2/(R1+R2)",  "5 / (R1+R2) = 10*m"]       
 e_series_selection = (24, 24)
 decade_selection = (100, '1k')
 
