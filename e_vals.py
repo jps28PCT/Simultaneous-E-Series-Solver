@@ -957,6 +957,10 @@ if __name__ == "__main__":
                     print(f"\033[2F\033[2K\033[1;31;40mInvalid command.")
             continue    # Skip rest of script and restart from top of main loop.
 
+        except KeyboardInterrupt:
+            print("\r\033[2K\033[?25h\033[0m\n")
+            sys.exit("User keyboard interrupt.")
+
         except Exception as error:
             waitDone.set()
             waitAnimation.join()
