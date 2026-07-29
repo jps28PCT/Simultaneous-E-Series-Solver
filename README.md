@@ -166,7 +166,7 @@ Computed in 0.52 seconds.
 │            R E S U L T S :            │
 └───────────────────────────────────────┘
 L1: 750 μ               Error: 0.000%
-C1: 150 n               Error: 0.070%
+C1: 15 μ                Error: 0.070%
 
 
 [Enter [S] to save to textfile or [R] to re-run with new values, otherwise press [ENTER] to quit.]
