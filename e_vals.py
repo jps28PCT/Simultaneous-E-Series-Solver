@@ -193,33 +193,64 @@ def e_val_select(components: str, relationships: list, e_series_selection: tuple
             sym_index.append(0)     # List of indicies
             sym_incre.append(False) # List of 'index' tags
 
-    ### FULLY DETERMINED - Round each component to nearest E-Series value
+    ### FULLY DETERMINED - Round each component to nearest E-Series value per dictionary
     if not base_syms:
-        for sym in syms:
-            raw = float(value_dict[0][sym])
-            if raw < 0:
-                raise ValueError("Negative component value detected. No real solution.")
-            elif raw == 0:
-                raise ValueError("Component value of zero detected. No real solution.")
-                
-            exponent = 0
-            while abs(raw) < 1:
-                exponent -= 1
-                raw = raw * 10
-                
-            while abs(raw) >= 10:
-                exponent += 1
-                raw = raw / 10
-            
-            rounded = min(e_series_array[syms.index(sym)], key=lambda x: abs(x - raw))  # Rounding to E-Series
-            
-            raw = raw * 10**exponent
-            rounded = rounded * 10**exponent
-            
-            err = abs(rounded - raw)/raw
+        negativeComponent = False
+        zeroComponent = False
+        skip = False
+        pct_diff_sum = float('inf')
+        for val_dict in value_dict:
+            temp_val_dict = {}
+            temp_pct_diff_dict = {}
+            for sym in syms:
+                raw = float(val_dict[sym])
+                if raw < 0:
+                    negativeComponent = True
+                    skip = True
+                    break
+                elif raw == 0:
+                    zeroComponent = True
+                    skip = True
+                    break
 
-            values[sym] = rounded
-            errors[sym] = err
+                exponent = 0
+                while abs(raw) < 1:
+                    exponent -= 1
+                    raw = raw * 10
+                    
+                while abs(raw) >= 10:
+                    exponent += 1
+                    raw = raw / 10
+                
+                rounded = min(e_series_array[syms.index(sym)], key=lambda x: abs(x - raw))  # Rounding to E-Series
+                
+                raw = raw * 10**exponent
+                rounded = rounded * 10**exponent
+                
+                err = abs(rounded - raw)/raw
+    
+                temp_val_dict[sym] = rounded
+                temp_pct_diff_dict[sym] = err
+
+            if skip:
+                skip = False
+                continue
+            temp_pct_diff_sum = 0
+            for key in temp_pct_diff_dict:
+                temp_pct_diff_sum += temp_pct_diff_dict[key]
+            
+            if temp_pct_diff_sum < pct_diff_sum:
+                pct_diff_sum = temp_pct_diff_sum
+                for key in temp_val_dict:
+                    values[key] = temp_val_dict[key]
+                    errors[key] = temp_pct_diff_dict[key]
+                        
+        if not values and (negativeComponent and zeroComponent):
+            raise ValueError("Negative and zero component values detected. No real solution.")
+        elif not values and negativeComponent:
+            raise ValueError("Negative component value detected. No real solution.")
+        elif not values and zeroComponent:
+            raise ValueError("Component value of zero detected. No real solution.")
 
     ### UNDER-DETERMINED - 
     else:
@@ -823,7 +854,6 @@ if __name__ == "__main__":
             try:
                 component = input("\033[2K\033[1;33;40mComponent:  \033[0m")
                 if component.upper() == 'EXIT':
-                    print("\033[0m\033[2J")
                     sys.exit("User exit at component entry.")
                 elif component == "":
                     if comp_str:
@@ -849,7 +879,6 @@ if __name__ == "__main__":
             try:
                 relationship = input("\033[2K\033[1;33;40mRelationship: \033[0m")
                 if relationship.upper() == 'EXIT':
-                    print("\033[0m\033[2J")
                     sys.exit("User exit at relationship entry.")
                 elif relationship == '':
                     if relationship_list:
@@ -879,7 +908,6 @@ if __name__ == "__main__":
                     try:
                         e_ser = input(f"\033[2K\033[1;33;40mE-Series for {comp}: \033[0m")
                         if e_ser.upper() == 'EXIT':
-                            print("\033[0m\033[2J")
                             sys.exit("User exit at E-series selection.")
                         e_ser = int(e_ser)
                         e_series_selection_check(e_ser, out="exception")
@@ -903,7 +931,6 @@ if __name__ == "__main__":
                     try:
                         decade = input(f"\033[2K\033[1;33;40mDecade for {comp}: \033[0m")
                         if decade.upper() == 'EXIT':
-                            print("\033[0m\033[2J")
                             sys.exit("User exit at decade entry.")
                         decade = eng_to_float(decade)
                         decade_check(decade, out="exception")
@@ -960,7 +987,6 @@ if __name__ == "__main__":
                 if option == 'R':
                     break
                 elif option == '':
-                    print("\033[0m\033[2J")
                     sys.exit("User exit at value error.")
                 else:
                     print(f"\033[2F\033[2K\033[1;31;40mInvalid command.")
@@ -968,7 +994,6 @@ if __name__ == "__main__":
 
         except KeyboardInterrupt:
             print("\r\033[2K\033[?25h\033[0m")
-            print("\033[0m\033[2J")
             sys.exit("User keyboard interrupt.")
 
         except Exception as error:
@@ -978,7 +1003,6 @@ if __name__ == "__main__":
             if (time2 - time1) > alertTime:
                 print("\a", end="", flush=True)    # Terminal bell
             print("\r\033[2K\033[?25h\033[0m")
-            print("\033[0m\033[2J")
             sys.exit(error)
 
         time2 = time()
@@ -1014,7 +1038,6 @@ if __name__ == "__main__":
                 break
             elif option == '':
                 print("\033[0m\n\n")
-                print("\033[0m\033[2J")
                 sys.exit("User exit at completion.")
             else:
                 print(f"\033[2F\033[2K\033[1;31;40mInvalid command.")
