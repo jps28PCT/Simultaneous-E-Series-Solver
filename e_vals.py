@@ -241,9 +241,6 @@ def e_val_select(components: str, relationships: list, e_series_selection: tuple
                 
                 if temp_pct_diff_sum < pct_diff_sum:
                     pct_diff_sum = temp_pct_diff_sum
-                    for key in base_syms_vals:
-                        values[key] = base_syms_vals[key]
-                        errors[key] = 0
                     for key in temp_val_dict:
                         values[key] = temp_val_dict[key]
                         errors[key] = temp_pct_diff_dict[key]
