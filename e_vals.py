@@ -193,33 +193,67 @@ def e_val_select(components: str, relationships: list, e_series_selection: tuple
             sym_index.append(0)     # List of indicies
             sym_incre.append(False) # List of 'index' tags
 
-    ### FULLY DETERMINED - Round each component to nearest E-Series value
+    ### FULLY DETERMINED - Round each component to nearest E-Series value per dictionary
     if not base_syms:
-        for sym in syms:
-            raw = float(value_dict[0][sym])
-            if raw < 0:
-                raise ValueError("Negative component value detected. No real solution.")
-            elif raw == 0:
-                raise ValueError("Component value of zero detected. No real solution.")
-                
-            exponent = 0
-            while abs(raw) < 1:
-                exponent -= 1
-                raw = raw * 10
-                
-            while abs(raw) >= 10:
-                exponent += 1
-                raw = raw / 10
-            
-            rounded = min(e_series_array[syms.index(sym)], key=lambda x: abs(x - raw))  # Rounding to E-Series
-            
-            raw = raw * 10**exponent
-            rounded = rounded * 10**exponent
-            
-            err = abs(rounded - raw)/raw
+        negativeComponent = False
+        zeroComponent = False
+        skip = False
+        pct_diff_sum = float('inf')
+        for val_dict in value_dict:
+            temp_val_dict = {}
+            temp_pct_diff_dict = {}
+            for sym in syms:
+                raw = float(val_dict[sym])
+                if raw < 0:
+                    negativeComponent = True
+                    skip = True
+                    break
+                elif raw == 0:
+                    zeroComponent = True
+                    skip = True
+                    break
 
-            values[sym] = rounded
-            errors[sym] = err
+                exponent = 0
+                while abs(raw) < 1:
+                    exponent -= 1
+                    raw = raw * 10
+                    
+                while abs(raw) >= 10:
+                    exponent += 1
+                    raw = raw / 10
+                
+                rounded = min(e_series_array[syms.index(sym)], key=lambda x: abs(x - raw))  # Rounding to E-Series
+                
+                raw = raw * 10**exponent
+                rounded = rounded * 10**exponent
+                
+                err = abs(rounded - raw)/raw
+    
+                temp_val_dict[sym] = rounded
+                temp_pct_diff_dict[sym] = err
+
+                if skip:
+                    skip = False
+                    continue
+                temp_pct_diff_sum = 0
+                for key in temp_pct_diff_dict:
+                    temp_pct_diff_sum += temp_pct_diff_dict[key]
+                
+                if temp_pct_diff_sum < pct_diff_sum:
+                    pct_diff_sum = temp_pct_diff_sum
+                    for key in base_syms_vals:
+                        values[key] = base_syms_vals[key]
+                        errors[key] = 0
+                    for key in temp_val_dict:
+                        values[key] = temp_val_dict[key]
+                        errors[key] = temp_pct_diff_dict[key]
+                        
+        if not values and (negativeComponent and zeroComponent):
+            raise ValueError("Negative and zero component values detected. No real solution.")
+        elif not values and negativeComponent:
+            raise ValueError("Negative component value detected. No real solution.")
+        elif not values and zeroComponent:
+            raise ValueError("Component value of zero detected. No real solution.")
 
     ### UNDER-DETERMINED - 
     else:
