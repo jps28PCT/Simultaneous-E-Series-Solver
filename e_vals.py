@@ -347,11 +347,11 @@ def print_e_val_results(valueDict: dict, seriesDict: dict=None) -> None:
             sigfigs = 3
         error = valueDict[component][1] * 100
         if error == 0.0:
-            pct_error = "0"
+            pct_error = "  0    "
         elif error < 0.001:
-            pct_error = "<0.001"
+            pct_error = "< 0.001"
         else:
-            pct_error = f"{error:.3f}"
+            pct_error = f" {error:>6.3f}"
         print(f"\033[1;33;40m{component}:\033[0m {eng_note(valueDict[component][0], sigfigs, encoding=sys.getdefaultencoding())}"
               f"\t\t\033[1;36;40mError:\033[0m {pct_error} %")
 
