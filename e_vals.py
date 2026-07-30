@@ -232,18 +232,18 @@ def e_val_select(components: str, relationships: list, e_series_selection: tuple
                 temp_val_dict[sym] = rounded
                 temp_pct_diff_dict[sym] = err
 
-                if skip:
-                    skip = False
-                    continue
-                temp_pct_diff_sum = 0
-                for key in temp_pct_diff_dict:
-                    temp_pct_diff_sum += temp_pct_diff_dict[key]
-                
-                if temp_pct_diff_sum < pct_diff_sum:
-                    pct_diff_sum = temp_pct_diff_sum
-                    for key in temp_val_dict:
-                        values[key] = temp_val_dict[key]
-                        errors[key] = temp_pct_diff_dict[key]
+            if skip:
+                skip = False
+                continue
+            temp_pct_diff_sum = 0
+            for key in temp_pct_diff_dict:
+                temp_pct_diff_sum += temp_pct_diff_dict[key]
+            
+            if temp_pct_diff_sum < pct_diff_sum:
+                pct_diff_sum = temp_pct_diff_sum
+                for key in temp_val_dict:
+                    values[key] = temp_val_dict[key]
+                    errors[key] = temp_pct_diff_dict[key]
                         
         if not values and (negativeComponent and zeroComponent):
             raise ValueError("Negative and zero component values detected. No real solution.")
