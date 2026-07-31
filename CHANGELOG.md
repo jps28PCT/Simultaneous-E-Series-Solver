@@ -13,7 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 *All details below this point were retroactively added to the changelog.*
 
-## [v1.0.0] - 2026-07-19
+## [1.0.0] - 2026-07-19
 First stable version - first release!
 ### Added
 - Added MIT license
@@ -28,7 +28,7 @@ First stable version - first release!
   - `relationship_check()` does basic validation for relationship equation formatting
   - `e_series_selection_check()` validates E-Series selection integers
   - `decade_check()` validates decade selection numbers
-  - `InvalidValueError` exception class raised by by verification functions with useful error strings
+  - `InvalidValueError` exception class raised by verification functions with useful error strings
 - Added docstring to `save_to_textfile()`
 - `eng_note()` can now print with UTF-8 characters instead of only ASCII, which can improve output readability
 
