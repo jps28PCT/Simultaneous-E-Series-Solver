@@ -12,9 +12,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ***
 *All details below this point were retroactively added to the changelog.*
 ***
+## [1.0.1] - 2026-07-20
+Bug patch
+
+### Changed
+- Updated README examples to reflect fixes
+
+### Fixed
+- Engineering notation constants in `e_val_select()` updated to correct powers of 10
+
+
+***
 
 ## [1.0.0] - 2026-07-19
-First stable version - first release!
+First stable version
+
 ### Added
 - Added MIT license
 - Added README
