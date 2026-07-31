@@ -10,8 +10,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [UNRELEASED]
 
 ***
-
 *All details below this point were retroactively added to the changelog.*
+***
 
 ## [1.0.0] - 2026-07-19
 First stable version - first release!
