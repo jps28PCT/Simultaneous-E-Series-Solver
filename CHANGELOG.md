@@ -20,6 +20,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ***
 *All details below this point were retroactively added to the changelog.*
 ***
+
+## [1.1.1] - 2026-07-29
+Bug patch
+
+### Fixed
+- Fully-determined case in `e_val_select()` now cycles through all solution sets returned by `sp.solve()` and finds the rounded solution set with the lowest cumulative error
+
+
+***
+
 ## [1.1.0] - 2026-07-29
 UI Improvements and Bug Fixes
 
