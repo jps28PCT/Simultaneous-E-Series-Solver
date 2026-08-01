@@ -12,6 +12,28 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ***
 *All details below this point were retroactively added to the changelog.*
 ***
+## [1.1.0] - 2026-07-29
+UI Improvements and Bug Fixes
+
+### Added
+- Added terminal bell (alert sound) when script calculation completes and exceeded 5 seconds
+- Added in-line "spinner" animation during script calculation to show process has not crashed
+- Script now clears screen upon exit
+- README updated to reflect relevant fixes
+- Comments added to `e_val_select()` to aid in troubleshooting and maintenance
+  
+### Changed
+- Script end of run menu prints `Invalid command.` when an unrecognized option is selected
+- Save output option only prompted once per script run, and multiple copies of the same run cannot be saved
+- Script no longer forces exit if a `ValueError` is caught from the solver engine, and the script can be exited or restarted
+- `e_val_select()` raises descriptive exceptions if no component values were able to be solved for
+
+### Fixed
+- `e_val_select()` no longer raises exception at first instance of a negative or zero component value
+- Engineering constants in `e_val_select()` were corrected after erroneous change in *v1.0.1*, and are now expressed unambiguously in exponential notation
+
+***
+
 ## [1.0.1] - 2026-07-20
 Bug patch
 
