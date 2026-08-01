@@ -16,6 +16,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 - `e_val_select()` no longer raises exception at first instance of a negative or zero component value
+- Fully-determined case in `e_val_select()` now cycles through all solution sets returned by `sp.solve()` and finds the rounded solution set with the lowest cumulative error
 
 ***
 *All details below this point were retroactively added to the changelog.*
@@ -25,7 +26,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 Bug patch
 
 ### Fixed
-- Fully-determined case in `e_val_select()` now cycles through all solution sets returned by `sp.solve()` and finds the rounded solution set with the lowest cumulative error
+- Undetermined case in `e_val_select()` no longer skips initial E-Series values on subsequent dictionaries if multiple solution sets are returned by `sp.solve()`
 
 
 ***
