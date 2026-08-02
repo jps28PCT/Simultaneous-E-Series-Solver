@@ -64,9 +64,9 @@ Bug patch
 First stable version
 
 ### Added
+- Uploaded `e_vals.py` from existing code
 - Added MIT license
 - Added README
-- Uploaded `e_vals.py` from existing code
 - Script can exit at any input line by typing `EXIT`, and exit message will print with exit location
 - Script end of run menu now allows entering `R` to rerun program with new values.
 - Added engineering notation and mathematical constants to `e_val_select()` to make relationship entry easier
@@ -84,7 +84,7 @@ First stable version
 - Output formatting for script
 - `header` changed to `footer` in `save_to_textfile()`, and prints at bottom of file
 - Multi-line `print()` statements edited to improve clarity while maintaining the same output
-- Function definition input variables formatted to improve clarity
+- Function variables assigned type hints and initialized with default values
 - `decade` changed to `decade_selection` in `e_val_select()` input.
 - `e_series_selection` and `decade_selection` are now tuples instead of lists, in `e_val_select()`
 
