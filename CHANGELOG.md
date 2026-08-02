@@ -31,7 +31,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 Bug patch
 
 ### Fixed
-- Undetermined case in `e_val_select()` no longer skips initial E-Series values on subsequent dictionaries if multiple solution sets are returned by `sp.solve()`
+- Underdetermined case in `e_val_select()` no longer skips initial E-Series values on subsequent dictionaries if multiple solution sets are returned by `sp.solve()`
 
 
 ***
@@ -73,7 +73,7 @@ First stable version
 - Added MIT license
 - Added README
 - Script can exit at any input line by typing `EXIT`, and exit message will print with exit location
-- Script end of run menu now allows entering `R` to rerun program with new values.
+- Script end of run menu now allows entering `R` to rerun program with new values
 - Added engineering notation and mathematical constants to `e_val_select()` to make relationship entry easier
 - Exception raised when empty string passed as `components` in `e_val_select()`
 - Added input pre-verification functions for values to be passed to `e_val_select()`
@@ -90,7 +90,7 @@ First stable version
 - `header` changed to `footer` in `save_to_textfile()`, and prints at bottom of file
 - Multi-line `print()` statements edited to improve clarity while maintaining the same output
 - Function variables assigned type hints and initialized with default values
-- `decade` changed to `decade_selection` in `e_val_select()` input.
+- `decade` changed to `decade_selection` in `e_val_select()` input
 - `e_series_selection` and `decade_selection` are now tuples instead of lists, in `e_val_select()`
 
 ### Fixed
