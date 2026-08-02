@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ***
 
-## [UNRELEASED]
+## [Unreleased]
 
 ### Added
 - CHANGELOG (this file) created and back-filled with prior changes and releases
@@ -31,7 +31,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 Bug patch
 
 ### Fixed
-- Underdetermined case in `e_val_select()` no longer skips initial E-Series values on subsequent dictionaries if multiple solution sets are returned by `sp.solve()`
+- Under-determined case in `e_val_select()` no longer skips initial E-Series values on subsequent dictionaries if multiple solution sets are returned by `sp.solve()`
 
 
 ***
