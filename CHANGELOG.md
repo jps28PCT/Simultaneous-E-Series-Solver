@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 - CHANGELOG (this file) created and back-filled with prior changes and releases
+- Included `.gitignore`
 
 ### Changed
 - Save output option only prompted once per script run, and multiple copies of the same run cannot be saved
