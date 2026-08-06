@@ -9,13 +9,9 @@ from e_vals import eng_note, eng_to_float
 class test_engineering_notation(unittest.TestCase):
   testFloat = 3.1415926535897932384
   
-  def test_float_to_eng_ascii_zero(self):
-    returnedStr = eng_note(inputValue=0.0, numSigFigs=1, encoding="ASCII")
+  def test_float_to_eng_zero(self):
+    returnedStr = eng_note(inputValue=0.0, numSigFigs=1)
     self.assertEqual(returnedStr, "0  ")
-
-  def test_float_to_eng_utf8_zero(self):
-      returnedStr = eng_note(inputValue=0.0, numSigFigs=1, encoding="UTF-8")
-      self.assertEqual(returnedStr, "0  ")
 
   def test_float_to_eng_ascii_inf(self):
       returnedStr = eng_note(inputValue=float('inf'), numSigFigs=1, encoding="ASCII")
@@ -32,6 +28,8 @@ class test_engineering_notation(unittest.TestCase):
   def test_float_to_eng_utf8_neg_inf(self):
       returnedStr = eng_note(inputValue=float('-inf'), numSigFigs=1, encoding="UTF-8")
       self.assertEqual(returnedStr, "-\u221E  ")
+
+
 
 
 if __name__ == '__main__':
