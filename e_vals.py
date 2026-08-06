@@ -604,7 +604,7 @@ def eng_to_float(inputStr: str) -> float:
             raise ValueError(f"'{prefixStr}' is an invalid engineering notation prefix. "
                              "Prefix must be between 10^-24 (y-) and 10^24 (Y-).")
         
-    returnNum = float(numStr) * 10**exponent
+    returnNum = float(f"{numStr}e{exponent}")
     return returnNum
 
 
