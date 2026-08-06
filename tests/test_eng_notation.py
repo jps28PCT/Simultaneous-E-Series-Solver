@@ -9,28 +9,28 @@ from e_vals import eng_note, eng_to_float
 class test_engineering_notation(unittest.TestCase):
   testFloat = 3.1415926535897932384
   
-  def float_to_eng_ascii_zero(self):
+  def test_float_to_eng_ascii_zero(self):
     returnedStr = eng_note(inputValue=0.0, numSigFigs=1, encoding="ASCII")
     self.assertEqual(returnedStr, "0  ")
 
-  def float_to_eng_utf8_zero(self):
+  def test_float_to_eng_utf8_zero(self):
       returnedStr = eng_note(inputValue=0.0, numSigFigs=1, encoding="UTF-8")
       self.assertEqual(returnedStr, "0  ")
 
-  def float_to_eng_ascii_inf(self):
+  def test_float_to_eng_ascii_inf(self):
       returnedStr = eng_note(inputValue=float('inf'), numSigFigs=1, encoding="ASCII")
       self.assertEqual(returnedStr, "inf  ")
 
-  def float_to_eng_utf8_inf(self):
+  def test_float_to_eng_utf8_inf(self):
       returnedStr = eng_note(inputValue=float('inf'), numSigFigs=1, encoding="UTF-8")
       self.assertEqual(returnedStr, "\u221E  ")
 
-  def float_to_eng_ascii_neg_inf(self):
+  def test_float_to_eng_ascii_neg_inf(self):
       returnedStr = eng_note(inputValue=float('-inf'), numSigFigs=1, encoding="ASCII")
       self.assertEqual(returnedStr, "-inf  ")
 
-  def float_to_eng_utf8_neg_inf(self):
-      returnedStr = eng_note(inputValue=float('inf'), numSigFigs=1, encoding="UTF-8")
+  def test_float_to_eng_utf8_neg_inf(self):
+      returnedStr = eng_note(inputValue=float('-inf'), numSigFigs=1, encoding="UTF-8")
       self.assertEqual(returnedStr, "-\u221E  ")
 
 
