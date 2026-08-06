@@ -191,7 +191,7 @@ class test_engineering_notation(unittest.TestCase):
     returnedFloat = eng_to_float(inputStr="-inf")
     self.assertEqual(returnedFloat, float("-inf"))
 
-  def test_eng_to_float_ascii_neg_inf(self):
+  def test_eng_to_float_utf8_neg_inf(self):
     returnedFloat = eng_to_float(inputStr="-\u221E")
     self.assertEqual(returnedFloat, float("-inf"))
 
