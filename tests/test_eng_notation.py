@@ -260,6 +260,9 @@ class test_engineering_notation(unittest.TestCase):
     returnedFloat = eng_to_float(inputStr="3.1416 \u03BC")
     self.assertEqual(returnedFloat, 3.1416e-6)
 
+  def test_eng_to_float_invalid_string(self):
+    with self.assertRaises(ValueError, msg="'x' is an invalid engineering notation prefix. \nPrefix must be between 10^-24 (y-) and 10^24 (Y-)."):
+      eng_to_float(inputStr="3.1416 x")
 
 if __name__ == '__main__':
     unittest.main()
