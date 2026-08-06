@@ -174,6 +174,27 @@ class test_engineering_notation(unittest.TestCase):
         returnedStr = eng_note(inputValue=test_value, numSigFigs=5, encoding="UTF-8")
         self.assertEqual(returnedStr, expected)
 
+
+  def test_eng_to_float_zero(self):
+    returnedFloat = eng_to_float(inputStr="0")
+    self.assertEqual(returnedFloat, 0)
+
+  def test_eng_to_float_ascii_inf(self):
+    returnedFloat = eng_to_float(inputStr="inf")
+    self.assertEqual(returnedFloat, float("inf"))
+
+  def test_eng_to_float_utf8_inf(self):
+    returnedFloat = eng_to_float(inputStr="\u221E")
+    self.assertEqual(returnedFloat, float("inf"))
+
+  def test_eng_to_float_ascii_neg_inf(self):
+    returnedFloat = eng_to_float(inputStr="-inf")
+    self.assertEqual(returnedFloat, float("-inf"))
+
+  def test_eng_to_float_ascii_neg_inf(self):
+    returnedFloat = eng_to_float(inputStr="-\u221E")
+    self.assertEqual(returnedFloat, float("-inf"))
+
   def test_eng_to_float(self):
     value_cases = [
             ("3.1416e-25  ", 3.1416e-25),
@@ -234,6 +255,10 @@ class test_engineering_notation(unittest.TestCase):
       with self.subTest(test_value=test_value):
         returnedFloat = eng_to_float(inputStr=test_value)
         self.assertEqual(returnedFloat, expected)
+
+  def test_eng_to_float_utf8(self):
+    returnedFloat = eng_to_float(inputStr="3.1416 \u03BC")
+    self.assertEqual(returnedFloat, 3.1416e-6)
 
 
 if __name__ == '__main__':
