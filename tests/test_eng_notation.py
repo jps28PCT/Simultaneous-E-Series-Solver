@@ -54,6 +54,7 @@ class test_engineering_notation(unittest.TestCase):
 
   def test_float_to_eng_ascii_prefixes(self):
     prefixes_cases = [
+              (self.TEST_FLOAT*10**-25, "3.1416e-25  "),
               (self.TEST_FLOAT*10**-24, "3.1416 y"),
               (self.TEST_FLOAT*10**-23, "31.416 y"),
               (self.TEST_FLOAT*10**-22, "314.16 y"),
@@ -104,7 +105,8 @@ class test_engineering_notation(unittest.TestCase):
               (self.TEST_FLOAT*10**23,  "314.16 Z"),
               (self.TEST_FLOAT*10**24,  "3.1416 Y"),
               (self.TEST_FLOAT*10**25,  "31.416 Y"),
-              (self.TEST_FLOAT*10**26,  "314.16 Y")]
+              (self.TEST_FLOAT*10**26,  "314.16 Y"),
+              (self.TEST_FLOAT*10**27,  "3.1416e+27  ")]
     
     for test_value, expected in prefixes_cases:
       with self.subTest(test_value=test_value):
@@ -113,6 +115,7 @@ class test_engineering_notation(unittest.TestCase):
 
   def test_float_to_eng_utf8_prefixes(self):
     prefixes_cases = [
+              (self.TEST_FLOAT*10**-25, "3.1416e-25  "),
               (self.TEST_FLOAT*10**-24, "3.1416 y"),
               (self.TEST_FLOAT*10**-23, "31.416 y"),
               (self.TEST_FLOAT*10**-22, "314.16 y"),
@@ -163,7 +166,8 @@ class test_engineering_notation(unittest.TestCase):
               (self.TEST_FLOAT*10**23,  "314.16 Z"),
               (self.TEST_FLOAT*10**24,  "3.1416 Y"),
               (self.TEST_FLOAT*10**25,  "31.416 Y"),
-              (self.TEST_FLOAT*10**26,  "314.16 Y")]
+              (self.TEST_FLOAT*10**26,  "314.16 Y"),
+              (self.TEST_FLOAT*10**27,  "3.1416e+27  ")]
     
     for test_value, expected in prefixes_cases:
       with self.subTest(test_value=test_value):
