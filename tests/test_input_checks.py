@@ -16,6 +16,15 @@ class test_input_validation(unittest.TestCase):
         with self.assertRaisesRegex(InvalidValueError, "First character is not a letter."):
             component_check(component="1R", out="exception")
 
+    def test_component_other_symbols_str(self):
+        returnedStr = component_check(component="R!", out="str")
+        self.assertEqual(returnedStr, "Contains characters other than letters, numbers, or underscore.")
+
+    def test_component_other_symbols_err(self):
+        with self.assertRaisesRegex(InvalidValueError, "Contains characters other than letters, numbers, or underscore."):
+            component_check(component="R!", out="exception")
+
+
 
 if __name__ == '__main__':
     unittest.main()
