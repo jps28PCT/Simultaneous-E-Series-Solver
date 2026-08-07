@@ -8,6 +8,14 @@ from e_vals import InvalidValueError, component_check, relationship_check, e_ser
 
 class test_input_validation(unittest.TestCase):
 
+    def test_component_valid_str(self):
+        returnedStr = component_check(component="R1", out="str")
+        self.assertEqual(returnedStr, "")
+
+    def test_component_valid_err(self):
+        component_check(component="R1", out="exception")
+        pass
+
     def test_component_first_letter_str(self):
         returnedStr = component_check(component="1R", out="str")
         self.assertEqual(returnedStr, "First character is not a letter.")
