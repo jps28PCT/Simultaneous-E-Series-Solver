@@ -32,6 +32,13 @@ class test_input_validation(unittest.TestCase):
         with self.assertRaisesRegex(InvalidValueError, "Contains characters other than letters, numbers, or underscore."):
             component_check(component="R!", out="exception")
 
+    def test_relationship_valid_str(self):
+        returnedStr = relationship_check(relationship="3.3 = 5 * (R2 / (R1 + R2))", out="str")
+        self.assertEqual(returnedStr, "")
+
+    def test_relationship_valid_err(self):
+        relationship_check(relationship="3.3 = 5 * (R2 / (R1 + R2))", out="exception")
+        pass
 
 
 if __name__ == '__main__':
