@@ -78,6 +78,22 @@ class test_input_validation(unittest.TestCase):
             relationship_check(relationship="10*k = 1/((2*pi*R1*C1)^(1/2))", out="exception")
     
 
+    ### E-SERIES SELECTION CHECK
+
+    def test_e_series_selection_valid_str(self):
+        e_series = [3, 6, 12, 24, 48, 96, 192]
+        for e_series_selection in e_series:
+            with self.subTest(e_series_selection=e_series_selection):
+                returnedStr = e_series_selection_check(e_series_selection=e_series_selection, out="str")
+                self.assertEqual(returnedStr, "")
+
+    def test_e_series_selection_valid_err(self):
+        e_series = [3, 6, 12, 24, 48, 96, 192]
+        for e_series_selection in e_series:
+            with self.subTest(e_series_selection=e_series_selection):
+                e_series_selection_check(e_series_selection=e_series_selection, out="str")
+                pass
+
 
 if __name__ == '__main__':
     unittest.main()
