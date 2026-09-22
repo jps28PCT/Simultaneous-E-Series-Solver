@@ -138,23 +138,36 @@ class test_input_validation(unittest.TestCase):
             if round_to < 0:
                 round_to = 0
 
-    def test_decade_check_zero_str(self):
+    def test_decade_zero_str(self):
         returnedStr = decade_check(decade=0, out="str")
         self.assertEqual(returnedStr, "Decade cannot be zero.")
 
-    def test_decade_check_zero_err(self):
+    def test_decade_zero_err(self):
         with self.assertRaisesRegex(InvalidValueError, "Decade cannot be zero."):
             decade_check(decade=0, out="exception")
 
-    def test_decade_check_negative_str(self):
+    def test_decad_negative_str(self):
         returnedStr = decade_check(decade=-1, out="str")
         self.assertEqual(returnedStr, "Decade cannot be negative.")
     
-    def test_decade_check_negative_err(self):
+    def test_decade_negative_err(self):
         with self.assertRaisesRegex(InvalidValueError, "Decade cannot be negative."):
             decade_check(decade=-1, out="exception")
 
-
+    def test_decade_invalid_str(self):
+        invalid = [0.02, 0.3, 4, 50, 600]
+        for value in invalid:
+            with self.subTest(value=value):
+                returnedStr = decade_check(decade=value, out="str")
+                self.assertEqual(returnedStr, "Value must be a decade expressed a power of 10.")
+    
+    def test_decade_invalid_err(self):
+        invalid = [0.02, 0.3, 4, 50, 600]
+        for value in invalid:
+            with self.subTest(value=value):
+                with self.assertRaisesRegex(InvalidValueError, "Value must be a decade expressed a power of 10."):
+                    decade_check(decade=value, out="exception")
+    
 
 if __name__ == '__main__':
     unittest.main()
