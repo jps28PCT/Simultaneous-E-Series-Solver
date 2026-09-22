@@ -34,6 +34,21 @@ class test_input_validation(unittest.TestCase):
         with self.assertRaisesRegex(InvalidValueError, "Contains characters other than letters, numbers, or underscore."):
             component_check(component="R!", out="exception")
 
+    def test_component_keywords_str(self):
+        keywords = ['pi','e', 'phi', 'sqrt_2','sqrt_3','Y', 'Z', 'E', 'P', 'T', 
+                       'G', 'M', 'k', 'm', 'u', 'n', 'p', 'f', 'a', 'z', 'y' ]
+        for keyword in keywords:
+            with self.subTest(keyword=keyword):
+                returnedStr = component_check(component=keyword, out="str")
+                self.assertEqual(returnedStr, "Component name cannot be reserved keyword.")
+
+    def test_component_keywords_err(self):
+            keywords = ['pi','e', 'phi', 'sqrt_2','sqrt_3','Y', 'Z', 'E', 'P', 'T', 
+                           'G', 'M', 'k', 'm', 'u', 'n', 'p', 'f', 'a', 'z', 'y' ]
+            for keyword in keywords:
+                with self.subTest(keyword=keyword):
+                    with self.assertRaisesRegex(InvalidValueError, "Component name cannot be reserved keyword."):
+                        component_check(component=keyword, out="exception")
 
     ### RELATIONSHIP CHECK
 
