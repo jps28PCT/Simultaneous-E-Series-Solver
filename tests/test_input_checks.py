@@ -3,6 +3,7 @@ This test is for the input validation functions.
 """
 
 import unittest
+import re
 from e_vals import InvalidValueError, component_check, relationship_check, e_series_selection_check, decade_check
 
 
@@ -36,19 +37,19 @@ class test_input_validation(unittest.TestCase):
 
     def test_component_keywords_str(self):
         keywords = ['pi','e', 'phi', 'sqrt_2','sqrt_3','Y', 'Z', 'E', 'P', 'T', 
-                       'G', 'M', 'k', 'm', 'u', 'n', 'p', 'f', 'a', 'z', 'y' ]
+                        'G', 'M', 'k', 'm', 'u', 'n', 'p', 'f', 'a', 'z', 'y' ]
         for keyword in keywords:
             with self.subTest(keyword=keyword):
                 returnedStr = component_check(component=keyword, out="str")
                 self.assertEqual(returnedStr, "Component name cannot be reserved keyword.")
 
     def test_component_keywords_err(self):
-            keywords = ['pi','e', 'phi', 'sqrt_2','sqrt_3','Y', 'Z', 'E', 'P', 'T', 
-                           'G', 'M', 'k', 'm', 'u', 'n', 'p', 'f', 'a', 'z', 'y' ]
-            for keyword in keywords:
-                with self.subTest(keyword=keyword):
-                    with self.assertRaisesRegex(InvalidValueError, "Component name cannot be reserved keyword."):
-                        component_check(component=keyword, out="exception")
+        keywords = ['pi','e', 'phi', 'sqrt_2','sqrt_3','Y', 'Z', 'E', 'P', 'T', 
+                        'G', 'M', 'k', 'm', 'u', 'n', 'p', 'f', 'a', 'z', 'y' ]
+        for keyword in keywords:
+            with self.subTest(keyword=keyword):
+                with self.assertRaisesRegex(InvalidValueError, "Component name cannot be reserved keyword."):
+                    component_check(component=keyword, out="exception")
 
     ### RELATIONSHIP CHECK
 
@@ -68,6 +69,13 @@ class test_input_validation(unittest.TestCase):
         with self.assertRaisesRegex(InvalidValueError, "Relationship equation must contain an equals sign."):
             relationship_check(relationship="5 * (R2 / (R1 + R2))", out="exception")
 
+    def test_relationship_caret_str(self):
+        returnedStr = relationship_check(relationship="10*k = 1/((2*pi*R1*C1)^(1/2))", out="str")
+        self.assertEqual(returnedStr, "Caret cannot be used for exponentiation. Use two asterisks (A**B).")
+    
+    def test_relationship_caret_err(self):
+        with self.assertRaisesRegex(InvalidValueError, re.escape("Caret cannot be used for exponentiation. Use two asterisks (A**B).")):
+            relationship_check(relationship="10*k = 1/((2*pi*R1*C1)^(1/2))", out="exception")
     
 
 
