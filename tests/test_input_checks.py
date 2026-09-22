@@ -66,7 +66,7 @@ class test_input_validation(unittest.TestCase):
         self.assertEqual(returnedStr, "Relationship equation must contain an equals sign.")
 
     def test_relationship_no_equal_sign_err(self):
-        with self.assertRaisesRegex(InvalidValueError, "Relationship equation must contain an equals sign."):
+        with self.assertRaisesRegex(InvalidValueError, re.escape("Relationship equation must contain an equals sign.")):
             relationship_check(relationship="5 * (R2 / (R1 + R2))", out="exception")
 
     def test_relationship_caret_str(self):
