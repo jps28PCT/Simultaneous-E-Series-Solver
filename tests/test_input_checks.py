@@ -8,6 +8,8 @@ from e_vals import InvalidValueError, component_check, relationship_check, e_ser
 
 class test_input_validation(unittest.TestCase):
 
+    ### COMPONENT CHECK
+
     def test_component_valid_str(self):
         returnedStr = component_check(component="R1", out="str")
         self.assertEqual(returnedStr, "")
@@ -32,6 +34,9 @@ class test_input_validation(unittest.TestCase):
         with self.assertRaisesRegex(InvalidValueError, "Contains characters other than letters, numbers, or underscore."):
             component_check(component="R!", out="exception")
 
+
+    ### RELATIONSHIP CHECK
+
     def test_relationship_valid_str(self):
         returnedStr = relationship_check(relationship="3.3 = 5 * (R2 / (R1 + R2))", out="str")
         self.assertEqual(returnedStr, "")
@@ -39,6 +44,16 @@ class test_input_validation(unittest.TestCase):
     def test_relationship_valid_err(self):
         relationship_check(relationship="3.3 = 5 * (R2 / (R1 + R2))", out="exception")
         pass
+
+    def test_relationship_no_equal_sign_str(self):
+        returnedStr = relationship_check(relationship="5 * (R2 / (R1 + R2))", out="str")
+        self.assertEqual(returnedStr, "Relationship equation must contain an equals sign.")
+
+    def test_relationship_no_equal_sign_str(self):
+        with self.assertRaisesRegex(InvalidValueError, "Relationship equation must contain an equals sign."):
+            relationship_check(relationship="5 * (R2 / (R1 + R2))", out="exception")
+
+    
 
 
 if __name__ == '__main__':
