@@ -49,7 +49,7 @@ class test_input_validation(unittest.TestCase):
         returnedStr = relationship_check(relationship="5 * (R2 / (R1 + R2))", out="str")
         self.assertEqual(returnedStr, "Relationship equation must contain an equals sign.")
 
-    def test_relationship_no_equal_sign_str(self):
+    def test_relationship_no_equal_sign_err(self):
         with self.assertRaisesRegex(InvalidValueError, "Relationship equation must contain an equals sign."):
             relationship_check(relationship="5 * (R2 / (R1 + R2))", out="exception")
 
