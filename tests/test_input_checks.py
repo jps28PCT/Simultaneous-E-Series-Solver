@@ -11,6 +11,10 @@ class test_input_validation(unittest.TestCase):
 
     ### COMPONENT CHECK
 
+    def test_component_invalid_output_str(self):
+        returnedStr = component_check(component="R1", out="TEST")
+        self.assertEqual(returnedStr, "NONE SELECTED")
+
     def test_component_valid_str(self):
         returnedStr = component_check(component="R1", out="str")
         self.assertEqual(returnedStr, "")
@@ -53,6 +57,10 @@ class test_input_validation(unittest.TestCase):
 
     ### RELATIONSHIP CHECK
 
+    def test_relationship_invalid_output_str(self):
+        returnedStr = relationship_check(relationship="3.3 = 5 * (R2 / (R1 + R2))", out="TEST")
+        self.assertEqual(returnedStr, "NONE SELECTED")
+
     def test_relationship_valid_str(self):
         returnedStr = relationship_check(relationship="3.3 = 5 * (R2 / (R1 + R2))", out="str")
         self.assertEqual(returnedStr, "")
@@ -79,6 +87,10 @@ class test_input_validation(unittest.TestCase):
     
 
     ### E-SERIES SELECTION CHECK
+
+    def test_e_series_selection_invalid_output_str(self):
+        returnedStr = e_series_selection_check(e_series_selection=24, out="TEST")
+        self.assertEqual(returnedStr, "NONE SELECTED")
 
     def test_e_series_selection_valid_str(self):
         e_series = [3, 6, 12, 24, 48, 96, 192]
@@ -111,6 +123,10 @@ class test_input_validation(unittest.TestCase):
 
 
     ### DECADE CHECK
+
+    def test_decade_invalid_output_str(self):
+        returnedStr = decade_check(decade=100, out="TEST")
+        self.assertEqual(returnedStr, "NONE SELECTED")
 
     def test_decade_check_valid_str(self):
         test_value = 1e-12
