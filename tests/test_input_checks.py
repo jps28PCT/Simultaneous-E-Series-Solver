@@ -91,8 +91,25 @@ class test_input_validation(unittest.TestCase):
         e_series = [3, 6, 12, 24, 48, 96, 192]
         for e_series_selection in e_series:
             with self.subTest(e_series_selection=e_series_selection):
-                e_series_selection_check(e_series_selection=e_series_selection, out="str")
+                e_series_selection_check(e_series_selection=e_series_selection, out="exception")
                 pass
+
+    def test_e_series_selection_invalid_str(self):
+        invalid = [-3, 0, 2, '1k', True]
+        for value in invalid:
+            with self.subTest(value=value):
+                returnedStr = e_series_selection_check(e_series_selection=value, out="str")
+                self.assertEqual(returnedStr, "Value must be a valid E-Series number.")
+    
+    def test_e_series_selection_invalid_err(self):
+        invalid = [-3, 0, 2, '1k', True]
+        for value in invalid:
+            with self.subTest(value=value):
+                with self.assertRaisesRegex(InvalidValueError, "Value must be a valid E-Series number."):
+                    e_series_selection_check(e_series_selection=value, out="exception")
+                    
+
+
 
 
 if __name__ == '__main__':
