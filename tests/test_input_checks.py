@@ -107,7 +107,37 @@ class test_input_validation(unittest.TestCase):
             with self.subTest(value=value):
                 with self.assertRaisesRegex(InvalidValueError, "Value must be a valid E-Series number."):
                     e_series_selection_check(e_series_selection=value, out="exception")
-                    
+    
+
+
+    ### DECADE CHECK
+
+    def test_decade_check_valid_str(self):
+        test_value = 1e-12
+        round_to = 12
+        while test_value <= 100e12:
+            with self.subTest(test_value=test_value):
+                returnedStr = decade_check(decade=round(test_value, round_to), out="str")
+                self.assertEqual(returnedStr, "")
+
+            test_value = test_value * 10
+            round_to -= 1
+            if round_to < 0:
+                round_to = 0
+
+    def test_decade_check_valid_err(self):
+        test_value = 1e-12
+        round_to = 12
+        while test_value <= 100e12:
+            with self.subTest(test_value=test_value):
+                decade_check(decade=round(test_value, round_to), out="str")
+                pass
+
+            test_value = test_value * 10
+            round_to -= 1
+            if round_to < 0:
+                round_to = 0
+
 
 
 
