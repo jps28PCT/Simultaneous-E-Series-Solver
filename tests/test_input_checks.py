@@ -130,7 +130,7 @@ class test_input_validation(unittest.TestCase):
         round_to = 12
         while test_value <= 100e12:
             with self.subTest(test_value=test_value):
-                decade_check(decade=round(test_value, round_to), out="str")
+                decade_check(decade=round(test_value, round_to), out="exception")
                 pass
 
             test_value = test_value * 10
