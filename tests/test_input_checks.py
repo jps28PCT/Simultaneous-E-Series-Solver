@@ -179,7 +179,7 @@ class test_input_validation(unittest.TestCase):
         with self.assertRaisesRegex(InvalidValueError, "Decade cannot be zero."):
             decade_check(decade=0, out="exception")
 
-    def test_decad_negative_str(self):
+    def test_decade_negative_str(self):
     # Negative decade value, string output
         returnedStr = decade_check(decade=-1, out="str")
         self.assertEqual(returnedStr, "Decade cannot be negative.")
