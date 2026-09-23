@@ -11,6 +11,9 @@ class test_input_validation(unittest.TestCase):
 
     ### COMPONENT CHECK
 
+    keywords = ['pi','e', 'phi', 'sqrt_2','sqrt_3','Y', 'Z', 'E', 'P', 'T', 
+                            'G', 'M', 'k', 'm', 'u', 'n', 'p', 'f', 'a', 'z', 'y' ]
+    
     def test_component_invalid_output_str(self):
         returnedStr = component_check(component="R1", out="TEST")
         self.assertEqual(returnedStr, "NONE SELECTED")
@@ -40,17 +43,13 @@ class test_input_validation(unittest.TestCase):
             component_check(component="R!", out="exception")
 
     def test_component_keywords_str(self):
-        keywords = ['pi','e', 'phi', 'sqrt_2','sqrt_3','Y', 'Z', 'E', 'P', 'T', 
-                        'G', 'M', 'k', 'm', 'u', 'n', 'p', 'f', 'a', 'z', 'y' ]
-        for keyword in keywords:
+        for keyword in self.keywords:
             with self.subTest(keyword=keyword):
                 returnedStr = component_check(component=keyword, out="str")
                 self.assertEqual(returnedStr, "Component name cannot be reserved keyword.")
 
     def test_component_keywords_err(self):
-        keywords = ['pi','e', 'phi', 'sqrt_2','sqrt_3','Y', 'Z', 'E', 'P', 'T', 
-                        'G', 'M', 'k', 'm', 'u', 'n', 'p', 'f', 'a', 'z', 'y' ]
-        for keyword in keywords:
+        for keyword in self.keywords:
             with self.subTest(keyword=keyword):
                 with self.assertRaisesRegex(InvalidValueError, "Component name cannot be reserved keyword."):
                     component_check(component=keyword, out="exception")
@@ -88,34 +87,33 @@ class test_input_validation(unittest.TestCase):
 
     ### E-SERIES SELECTION CHECK
 
+    e_series = [3, 6, 12, 24, 48, 96, 192]
+    invalid_series = [-3, 0, 2, '1k', True]
+
     def test_e_series_selection_invalid_output_str(self):
         returnedStr = e_series_selection_check(e_series_selection=24, out="TEST")
         self.assertEqual(returnedStr, "NONE SELECTED")
 
     def test_e_series_selection_valid_str(self):
-        e_series = [3, 6, 12, 24, 48, 96, 192]
-        for e_series_selection in e_series:
+        for e_series_selection in self.e_series:
             with self.subTest(e_series_selection=e_series_selection):
                 returnedStr = e_series_selection_check(e_series_selection=e_series_selection, out="str")
                 self.assertEqual(returnedStr, "")
 
     def test_e_series_selection_valid_err(self):
-        e_series = [3, 6, 12, 24, 48, 96, 192]
-        for e_series_selection in e_series:
+        for e_series_selection in self.e_series:
             with self.subTest(e_series_selection=e_series_selection):
                 e_series_selection_check(e_series_selection=e_series_selection, out="exception")
                 pass
 
     def test_e_series_selection_invalid_str(self):
-        invalid = [-3, 0, 2, '1k', True]
-        for value in invalid:
+        for value in self.invalid_series:
             with self.subTest(value=value):
                 returnedStr = e_series_selection_check(e_series_selection=value, out="str")
                 self.assertEqual(returnedStr, "Value must be a valid E-Series number.")
     
     def test_e_series_selection_invalid_err(self):
-        invalid = [-3, 0, 2, '1k', True]
-        for value in invalid:
+        for value in self.invalid_series:
             with self.subTest(value=value):
                 with self.assertRaisesRegex(InvalidValueError, "Value must be a valid E-Series number."):
                     e_series_selection_check(e_series_selection=value, out="exception")
@@ -124,35 +122,27 @@ class test_input_validation(unittest.TestCase):
 
     ### DECADE CHECK
 
+    decades = [0.000000000001, 0.00000000001, 0.0000000001, 0.000000001, 0.00000001, 
+               0.0000001, 0.000001, 0.00001, 0.0001, 0.001, 0.01, 0.1, 1, 10, 100, 
+               1000, 10000, 100000, 1000000, 10000000, 100000000, 1000000000,
+               10000000000, 100000000000, 1000000000000]
+    invalid_decades = [0.02, 0.3, 4, 50, 600]
+
     def test_decade_invalid_output_str(self):
         returnedStr = decade_check(decade=100, out="TEST")
         self.assertEqual(returnedStr, "NONE SELECTED")
 
     def test_decade_check_valid_str(self):
-        test_value = 1e-12
-        round_to = 12
-        while test_value <= 100e12:
-            with self.subTest(test_value=test_value):
-                returnedStr = decade_check(decade=round(test_value, round_to), out="str")
+        for decade in self.decades:
+            with self.subTest(test_value=decade):
+                returnedStr = decade_check(decade=decade, out="str")
                 self.assertEqual(returnedStr, "")
 
-            test_value = test_value * 10
-            round_to -= 1
-            if round_to < 0:
-                round_to = 0
-
     def test_decade_check_valid_err(self):
-        test_value = 1e-12
-        round_to = 12
-        while test_value <= 100e12:
-            with self.subTest(test_value=test_value):
-                decade_check(decade=round(test_value, round_to), out="exception")
+        for decade in self.decades:
+            with self.subTest(test_value=decade):
+                decade_check(decade=decade, out="exception")
                 pass
-
-            test_value = test_value * 10
-            round_to -= 1
-            if round_to < 0:
-                round_to = 0
 
     def test_decade_zero_str(self):
         returnedStr = decade_check(decade=0, out="str")
@@ -171,15 +161,13 @@ class test_input_validation(unittest.TestCase):
             decade_check(decade=-1, out="exception")
 
     def test_decade_invalid_str(self):
-        invalid = [0.02, 0.3, 4, 50, 600]
-        for value in invalid:
+        for value in self.invalid_decades:
             with self.subTest(value=value):
                 returnedStr = decade_check(decade=value, out="str")
                 self.assertEqual(returnedStr, "Value must be a decade expressed a power of 10.")
     
     def test_decade_invalid_err(self):
-        invalid = [0.02, 0.3, 4, 50, 600]
-        for value in invalid:
+        for value in self.invalid_decades:
             with self.subTest(value=value):
                 with self.assertRaisesRegex(InvalidValueError, "Value must be a decade expressed a power of 10."):
                     decade_check(decade=value, out="exception")
