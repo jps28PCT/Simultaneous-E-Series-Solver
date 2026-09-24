@@ -226,9 +226,9 @@ def e_val_select(components: str, relationships: list, e_series_selection: tuple
                 
                 raw = raw * 10**exponent
                 if exponent < 0:
-                    rounded = round(rounded * 10**exponent, abs(exponent)+1)
+                    rounded = round(rounded * 10**exponent, abs(exponent)+2)
                 else:
-                    rounded = round(rounded * 10**exponent)
+                    rounded = round(rounded * 10**exponent, 2)
                 
                 err = abs(rounded - raw)/raw
     
@@ -315,9 +315,9 @@ def e_val_select(components: str, relationships: list, e_series_selection: tuple
                     
                     raw = raw * 10**exponent
                     if exponent < 0:
-                        rounded = round(rounded * 10**exponent, abs(exponent)+1)
+                        rounded = round(rounded * 10**exponent, abs(exponent)+2)
                     else:
-                        rounded = round(rounded * 10**exponent)
+                        rounded = round(rounded * 10**exponent, 2)
                     
                     temp_val_dict[key] = rounded
                     
