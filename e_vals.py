@@ -225,7 +225,10 @@ def e_val_select(components: str, relationships: list, e_series_selection: tuple
                 rounded = min(e_series_array[syms.index(sym)], key=lambda x: abs(x - raw))  # Rounding to E-Series
                 
                 raw = raw * 10**exponent
-                rounded = rounded * 10**exponent
+                if exponent < 0:
+                    rounded = round(rounded * 10**exponent, abs(exponent)+1)
+                else:
+                    rounded = round(rounded * 10**exponent)
                 
                 err = abs(rounded - raw)/raw
     
@@ -311,7 +314,10 @@ def e_val_select(components: str, relationships: list, e_series_selection: tuple
                     rounded = min(e_series_array[syms.index(key)], key=lambda x: abs(x - raw))  # Rounding to E-Series
                     
                     raw = raw * 10**exponent
-                    rounded = rounded * 10**exponent
+                    if exponent < 0:
+                        rounded = round(rounded * 10**exponent, abs(exponent)+1)
+                    else:
+                        rounded = round(rounded * 10**exponent)
                     
                     temp_val_dict[key] = rounded
                     
